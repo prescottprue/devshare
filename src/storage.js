@@ -1,55 +1,53 @@
 import devshareClient from './helpers/tessellate-client'
 
 class Storage {
-  constructor(config) {
+  constructor (config) {
     this.configStuff = config.stuff
   }
 
-  createStore(name) {
+  createStore (name) {
     return devshareClient.createStore()
   }
 
-  store(name) {
+  store (name) {
     return new Store()
   }
 
 }
 
-class Store() {
-  constructor() {
+class Store {
+  constructor () {
 
   }
 
-  createItem(name) {
+  createItem (name) {
 
   }
 
-  getItem(id) {
-    return
+  getItem (id) {
   }
 
 }
 
 class Item {
-  constructor() {
+  constructor () {
 
   }
 
-  get() {
+  get () {
 
   }
 
-  update(id, object) {
+  update (id, object) {
 
   }
 
-  delete() {
+  delete () {
 
   }
 
 }
 
-
-export default function(config) {
+export default function (config) {
   return new Storage(config)
 }

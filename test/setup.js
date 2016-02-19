@@ -1,0 +1,14 @@
+var chai = global.chai = require('chai');
+var expect = global.expect = require('chai').expect;
+var sinon = global.sinon = require('sinon');
+var chaiAsPromised = require('chai-as-promised');
+// chai.use(chaiAsPromised);
+// chai.use(sinon);
+var Promise = require('es6-promise').Promise;
+global.Promise = Promise;
+// var jsdom = require('jsdom');
+// var doc = jsdom.jsdom("<html><body></body></html>");
+// var win = doc.defaultView;
+// global.document = doc;
+// global.window = win;
+// global.navigator = win.navigator;
