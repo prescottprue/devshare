@@ -8,58 +8,34 @@
 [![coverage](https://img.shields.io/codeclimate/coverage/github/KyperTech/devshare.svg?style=flat-square)](https://codeclimate.com/github/KyperTech/devshare)
 [![license](https://img.shields.io/npm/l/devshare.svg?style=flat-square)](https://github.com/KyperTech/devshare/blob/master/LICENSE)
 
-Client library to simplify communication with the Devshare service which is built on the Tessellate application building platform.
+Client library to simplify communication with the devShare service which is built on the Tessellate application building platform.
 
 ## Getting Started
 
-Devshare is isomorphic, so it can be used within a front-end or on a server. Below are options for setups:
+devShare is universal, so it can be used client-side or server-side.
 
-### NodeJS
+### NPM
 1. Install:
     `npm install --save devshare`
 
 2. Include and use `devshare`:
 
     ```javascript
-    var Devshare = require('devshare');
-  var devshare = new Devshare();
+  import { createClient } from 'devshare';
+  let devshare = createClient(auth);
     ```
 
-### ES6
-1. Install:
-    `npm install --save devshare`
-
-2. Include and use `devshare`:
-
-    ```javascript
-  import Devshare from 'devshare';
-  let devshare = new Devshare();
-    ```
-
-### Browser
-  1. Include the Devshare library using one of the following:
-    #### CDN
-    Add script tag to index.html:
+### CDN
+  1. Add script tag to index.html:
 
       ```html
       <script src="http://cdn.kyper.io/js/devshare/latest/devshare.js"></script>
       ```
 
-    #### Bower
-    Run `bower install --save devshare`
-    Then include the following in your index.html:
-    ```html
-    <script src="./bower_components/devshare/dist/devshare.js"></script>
-    ```
-  2. Begin using devshare:
+  2. Create the client:
 
     ```javascript
-    var devshare = new Devshare();
-    if(devshare.isLoggedIn){
-      console.log('The currently logged in user is', devshare.currentUser);
-    } else {
-      console.warn('Not logged into devshare');
-    }
+    var devshare = Devshare.createClient(auth);
     ```
 
 ## Documentation

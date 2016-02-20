@@ -1,10 +1,18 @@
-export default function(config) {
-  // Logic for auth
+import Project from './project'
+import User from './user'
 
-  return {
-    storage: storage(auth),
-    cloud: cloud(auth),
-    fileSystem: fileSystem(auth)
+export default class Devshare {
+  constructor (config) {
+    // TODO: Work on this logic for auth
+    this.auth = config
+    // TODO: fall back to cookie JWT token if no auth is provided
   }
 
+  project (username, projectname) {
+    return new Project(username, projectname)
+  }
+
+  user (username) {
+    return new User(username)
+  }
 }
