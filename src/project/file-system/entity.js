@@ -9,6 +9,16 @@ class Entity {
   get () {
   }
 
+  /** Get entity content
+  */
+  getContent () {
+  }
+
+  /** Get entity meta data
+  */
+  getMeta () {
+  }
+
   /** Add entity to file system
   */
   add () {
