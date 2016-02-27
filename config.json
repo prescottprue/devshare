@@ -5,5 +5,6 @@
 		"prefix":"js/devshare"
 	},
   "entryFileName": "src/index.js",
-  "mainVarName": "Devshare"
+  "mainVarName": "Devshare",
+	"root": "http://tessellate.elasticbeanstalk.com"
 }

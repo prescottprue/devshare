@@ -1,5 +1,5 @@
 import _project from './project'
-import User from './user'
+import _user from './user'
 
 // export default class Devshare {
 //   constructor (config) {
@@ -17,5 +17,9 @@ import User from './user'
 //   }
 // }
 
-export default {}
+export default {
+  project: _project,
+  user: _user
+}
 export const project = _project
+export const user = _user

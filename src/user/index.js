@@ -1,15 +1,17 @@
-// import tessellateClient from './helpers/tessellate-client'
+import config from '../../config.json'
+import cruder from '../utils/cruder'
 
-export default class User {
-  constructor (config) {
-    this.configStuff = config.stuff
+export default (username) => {
+  const url = `${config.root}/users/${username}`
+
+  const methods = {
+    createProject: (projectname) =>
+      cruder(`${url}/projects`, ['create']).create({ name: projectname })
   }
 
-  get () {
-
-  }
-
-  get projects () {
-
-  }
+  return Object.assign(
+    {},
+    cruder(url, ['get', 'update']),
+    methods
+  )
 }

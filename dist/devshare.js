@@ -123,22 +123,44 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var fetcher = function fetcher(state) {
+	var checkResponseError = function checkResponseError(body) {
+	  if (body.code >= 400) {
+	    var message = body.message;
+	    var status = body.status;
+
+	    return Promise.reject({ message: message, status: status });
+	  }
+	};
+
+	var cruder = function cruder(state) {
 	  return {
 	    get: function get() {
-	      return (0, _isomorphicFetch2.default)('http://tessellate.elasticbeanstalk.com/' + state.username + '/' + state.projectname);
+	      return (0, _isomorphicFetch2.default)(state.url).then(function (response) {
+	        return response.json();
+	      }).then(function (body) {
+	        checkResponseError(body);
+	        return body;
+	      });
+	    },
+	    remove: function remove() {
+	      return (0, _isomorphicFetch2.default)(state.url, {
+	        method: 'delete'
+	      }).then(function (response) {
+	        return response.json();
+	      }).then(function (body) {
+	        checkResponseError(body);
+	        return body;
+	      });
 	    }
 	  };
 	};
 
 	var project = function project(username, projectname) {
 	  var state = {
-	    username: username,
-	    projectname: projectname,
-	    endpoint: _config2.default.root + '/username/projectname'
+	    url: _config2.default.root + '/users/' + username + '/projects/' + projectname
 	  };
 
-	  return Object.assign({}, fetcher(state));
+	  return Object.assign({}, cruder(state));
 
 	  // Promise that return the fetch of content and meta data
 
@@ -393,7 +415,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			"prefix": "js/devshare"
 		},
 		"entryFileName": "src/index.js",
-		"mainVarName": "Devshare"
+		"mainVarName": "Devshare",
+		"root": "http://tessellate.elasticbeanstalk.com/"
 	};
 
 /***/ },
