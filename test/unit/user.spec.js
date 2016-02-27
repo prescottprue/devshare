@@ -1,3 +1,5 @@
+import { user } from '../../src'
+
 describe('User', () => {
 	beforeEach(() => {
 
@@ -6,9 +8,19 @@ describe('User', () => {
 
 	})
 
-	describe('constructor', () => {
-		it('has unit test scaffolding', () => {
-			expect(1).to.equal(1)
-		})
+	describe('get', () => {
+		it('should get the user', () =>
+			user('mel')
+				.get()
+				.should.eventually.have.property('username')
+		)
+	})
+
+	describe('createProject', () => {
+		it('should create a new user', () =>
+			user('mel')
+				.createProject('poop')
+				.should.eventually.have.property('name')
+		)
 	})
 })
