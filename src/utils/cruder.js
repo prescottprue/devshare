@@ -33,8 +33,12 @@ export const remove = url => _ => {
 
 export const update = url => object => {
   return fetch(url, {
-    method: 'patch',
-    body: object
+    method: 'put',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(object)
   })
     .then(response => {
       return response.json()
@@ -48,6 +52,10 @@ export const update = url => object => {
 export const create = url => object => {
   return fetch(url, {
     method: 'post',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(object)
   })
     .then(response => {
@@ -64,7 +72,8 @@ export default (url, types) => {
     get,
     remove,
     update,
-    create
+    create,
+    add: create
   }
 
   return types

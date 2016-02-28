@@ -1,12 +1,14 @@
 import config from '../../config.json'
-import cruder from '../utils/cruder'
+import cruder, { add, update } from '../utils/cruder'
 
 export default (username, projectname) => {
   const url = `${config.root}/users/${username}/projects/${projectname}`
 
   const methods = {
-    rename: (newProjectname) =>
-      cruder(url, ['update']).update({ name: newProjectname })
+    rename: newProjectname =>
+      update(url)({ name: newProjectname }),
+    addCollaborator: username =>
+      add(`${url}/collaborator`)(username)
   }
 
   return Object.assign(
