@@ -67,13 +67,15 @@ export const create = url => object => {
     })
 }
 
+export const add = create
+
 export default (url, types) => {
   let methods = {
     get,
     remove,
     update,
     create,
-    add: create
+    add
   }
 
   return types
