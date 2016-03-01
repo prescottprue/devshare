@@ -1,12 +1,8 @@
-/* global describe it beforeEach afterEach nock */
+/* global describe it beforeEach nock */
 import { project } from '../../src'
 import config from '../../config.json'
 
 describe('Project', () => {
-  afterEach(() => {
-
-  })
-
   describe('get', () => {
     beforeEach(() => {
       nock(`${config.root}`)
@@ -56,7 +52,6 @@ describe('Project', () => {
     it('should rename the project', () =>
       project('mel', oldProjectname)
         .rename(projectname)
-        // TODO: want to check that response object has the new name
         .should.eventually.have.property('name', projectname)
     )
   })
@@ -83,6 +78,25 @@ describe('Project', () => {
       project('mel', projectname)
         .addCollaborator(username)
         .should.eventually.have.deep.property('collaborators[0].username', username)
+    )
+  })
+
+  describe('removeCollaborator', () => {
+    let projectname = 'jazztoes'
+    let username = 'scott'
+
+    beforeEach(() => {
+      nock(`${config.root}`)
+        .delete(`/projects/mel/${projectname}/collaborators/${username}`)
+        .reply(200, {
+          message: 'collaborator successfully deleted'
+        })
+    })
+
+    it('should remove a collaborator from the project', () =>
+      project('mel', projectname)
+        .removeCollaborator(username)
+        .should.eventually.have.property('message', 'collaborator successfully deleted')
     )
   })
 })

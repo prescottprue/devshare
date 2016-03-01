@@ -1,12 +1,8 @@
-/* global describe it beforeEach afterEach nock */
+/* global describe it beforeEach nock */
 import { user } from '../../src'
 import config from '../../config.json'
 
 describe('User', () => {
-  afterEach(() => {
-
-  })
-
   describe('get', () => {
     beforeEach(() => {
       nock(`${config.root}`)
@@ -31,10 +27,10 @@ describe('User', () => {
     beforeEach(() => {
       nock(`${config.root}`)
         .post('/users/mel/projects', {
-          name: projectname,
+          name: projectname
         })
         .reply(200, {
-          name: projectname,
+          name: projectname
         })
       nock(`${config.root}`)
         .post('/users/mel/projects', {

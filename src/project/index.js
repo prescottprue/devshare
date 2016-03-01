@@ -1,5 +1,5 @@
 import config from '../../config.json'
-import cruder, { update } from '../utils/cruder'
+import cruder, { update, remove } from '../utils/cruder'
 
 export default (owner, projectname) => {
   const url = `${config.root}/projects/${owner}/${projectname}`
@@ -8,7 +8,9 @@ export default (owner, projectname) => {
     rename: newProjectname =>
       update(url)({ name: newProjectname }),
     addCollaborator: username =>
-      update(`${url}/collaborators/${username}`)()
+      update(`${url}/collaborators/${username}`)(),
+    removeCollaborator: username =>
+      remove(`${url}/collaborators/${username}`)()
   }
 
   return Object.assign(
