@@ -1,13 +1,20 @@
-var chai = global.chai = require('chai')
 var nock = global.nock = require('nock')
+
+var chai = global.chai = require('chai')
 var expect = global.expect = chai.expect
 var should = global.should = chai.should()
-// var sinon = global.sinon = require('sinon')
 var chaiAsPromised = require('chai-as-promised')
-// var chaiProperties = require('chai-properties')
-
 chai.use(chaiAsPromised)
-// chai.use(chaiProperties);
-// chai.use(sinon);
+
 var Promise = require('es6-promise').Promise
 global.Promise = Promise
+
+var jsdom = require('jsdom')
+var doc = jsdom.jsdom("<html><body></body></html>")
+var win = doc.defaultView
+global.document = doc
+global.window = win
+global.navigator = win.navigator
+
+var sinon = global.sinon = require('sinon')
+window.sessionStorage = require('./utils/storageMock')()

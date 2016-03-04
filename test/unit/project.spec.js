@@ -12,7 +12,7 @@ describe('Project', () => {
         })
     })
 
-    it('should get the project', () =>
+    it('get the project', () =>
       project('mel', 'goobaly')
         .get()
         .should.eventually.have.property('name', 'goobaly')
@@ -28,7 +28,7 @@ describe('Project', () => {
         })
     })
 
-    it('should delete the project', () =>
+    it('delete the project', () =>
       project('mel', 'goobaly')
         .remove()
         .should.eventually.have.property('name')
@@ -49,7 +49,7 @@ describe('Project', () => {
         })
     })
 
-    it('should rename the project', () =>
+    it('rename the project', () =>
       project('mel', oldProjectname)
         .rename(projectname)
         .should.eventually.have.property('name', projectname)
@@ -74,7 +74,7 @@ describe('Project', () => {
         })
     })
 
-    it('should add a collaborator to the project', () =>
+    it('add a collaborator to the project', () =>
       project('mel', projectname)
         .addCollaborator(username)
         .should.eventually.have.deep.property('collaborators[0].username', username)
@@ -93,7 +93,7 @@ describe('Project', () => {
         })
     })
 
-    it('should remove a collaborator from the project', () =>
+    it('remove a collaborator from the project', () =>
       project('mel', projectname)
         .removeCollaborator(username)
         .should.eventually.have.property('message', 'collaborator successfully deleted')

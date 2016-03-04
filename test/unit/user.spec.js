@@ -12,7 +12,7 @@ describe('User', () => {
         })
     })
 
-    it('should get the user', () =>
+    it('get the user', () =>
       user('mel')
         .get()
         .should.eventually.have.property('username')
@@ -47,13 +47,13 @@ describe('User', () => {
         })
     })
 
-    it('should create a project', () =>
+    it('create a project', () =>
       user('mel')
         .createProject(projectname)
         .should.eventually.have.property('name', projectname)
     )
 
-    it('should add collaborators', () =>
+    it('add collaborators', () =>
       user('mel')
         .createProject(projectname, collaborators)
         .should.eventually.have.deep.property('collaborators[0].username', username)

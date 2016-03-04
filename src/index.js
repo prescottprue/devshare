@@ -1,6 +1,6 @@
 import _project from './project'
 import _user from './user'
-import _auth from './utils/auth'
+import _auth from './auth'
 
 export default {
   project: _project,

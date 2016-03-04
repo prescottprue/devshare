@@ -1,11 +1,11 @@
 import fetch from 'isomorphic-fetch'
-import auth from './auth'
 
-const checkResponseError = body => {
+const handleResponse = body => {
   if (body.code >= 400) {
     const { message, status } = body
     return Promise.reject({ message, status })
   }
+  return body
 }
 
 export const get = url => _ => {
@@ -14,8 +14,7 @@ export const get = url => _ => {
       return response.json()
     })
     .then(body => {
-      checkResponseError(body)
-      return body
+      return handleResponse(body)
     })
 }
 
@@ -27,8 +26,7 @@ export const remove = url => _ => {
       return response.json()
     })
     .then(body => {
-      checkResponseError(body)
-      return body
+      return handleResponse(body)
     })
 }
 
@@ -45,8 +43,7 @@ export const update = url => object => {
       return response.json()
     })
     .then(body => {
-      checkResponseError(body)
-      return body
+      return handleResponse(body)
     })
 }
 
@@ -63,12 +60,13 @@ export const create = url => object => {
       return response.json()
     })
     .then(body => {
-      checkResponseError(body)
-      return body
+      return handleResponse(body)
     })
 }
 
 export const add = create
+export const post = create
+export const put = update
 
 export default (url, types) => {
   let methods = {
