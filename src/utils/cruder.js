@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { createHeaders } from '../auth'
 
 const handleResponse = body => {
   if (body.code >= 400) {
@@ -9,7 +10,7 @@ const handleResponse = body => {
 }
 
 export const get = url => _ => {
-  return fetch(url)
+  return fetch(url, { headers: createHeaders() })
     .then(response => {
       return response.json()
     })
@@ -20,7 +21,8 @@ export const get = url => _ => {
 
 export const remove = url => _ => {
   return fetch(url, {
-    method: 'delete'
+    method: 'delete',
+    headers: createHeaders()
   })
     .then(response => {
       return response.json()
@@ -30,13 +32,10 @@ export const remove = url => _ => {
     })
 }
 
-export const update = url => object => {
+export const put = url => object => {
   return fetch(url, {
     method: 'put',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
+    headers: createHeaders(),
     body: JSON.stringify(object)
   })
     .then(response => {
@@ -47,13 +46,10 @@ export const update = url => object => {
     })
 }
 
-export const create = url => object => {
+export const post = url => object => {
   return fetch(url, {
     method: 'post',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
+    headers: createHeaders(),
     body: JSON.stringify(object)
   })
     .then(response => {
@@ -64,9 +60,9 @@ export const create = url => object => {
     })
 }
 
-export const add = create
-export const post = create
-export const put = update
+export const add = post
+export const create = post
+export const update = put
 
 export default (url, types) => {
   let methods = {

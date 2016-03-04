@@ -1,4 +1,4 @@
-/* global describe it beforeEach nock sinon */
+/* global describe it expect beforeEach nock */
 import * as auth from '../../src/auth'
 import cookie from 'cookie'
 import config from '../../config.json'
@@ -43,6 +43,40 @@ describe('Auth', () => {
         .should.be.fulfilled
         .then(_ => {
           return JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username)
+        })
+    )
+  })
+
+  describe('logout', () => {
+    beforeEach(() => {
+      nock(`${config.root}`)
+        .put(`/logout`)
+        .reply(200, {
+          message: 'logout successful'
+        })
+    })
+
+    it('successfully call server endpoint', () =>
+      auth
+        .logout()
+        .should.eventually.have.property('message', 'logout successful')
+    )
+
+    it('token is cleared from cookie', () =>
+      auth
+        .logout()
+        .should.be.fulfilled
+        .then(_ => {
+          return document.cookie.should.be.empty
+        })
+    )
+
+    it('current user is removed', () =>
+      auth
+        .logout()
+        .should.be.fulfilled
+        .then(_ => {
+          return expect(window.sessionStorage.getItem('currentUser')).to.be.null
         })
     )
   })

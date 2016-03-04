@@ -6,7 +6,7 @@ import { isBrowser } from '../utils/env'
 let token
 let currentUser
 
-export const buildHeaders = _ => {
+export const createHeaders = _ => {
   let header = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
@@ -18,18 +18,38 @@ export const buildHeaders = _ => {
   return header
 }
 
-export const setToken = nextToken => {
+const setToken = nextToken => {
   if (isBrowser()) {
     document.cookie = cookie.serialize('token', nextToken)
   }
   token = nextToken
 }
 
-export const setCurrentUser = nextCurrentUser => {
+const removeToken = _ => {
+  if (isBrowser()) {
+    document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+  }
+}
+
+export const getCurrentUser = _ => {
+  if (isBrowser()) {
+    currentUser = window.sessionStorage.getItem('currentUser')
+  }
+  return JSON.parse(currentUser)
+}
+
+const setCurrentUser = nextCurrentUser => {
   if (isBrowser()) {
     window.sessionStorage.setItem('currentUser', JSON.stringify(nextCurrentUser))
   }
   currentUser = nextCurrentUser
+}
+
+const removeCurrentUser = _ => {
+  if (isBrowser()) {
+    window.sessionStorage.removeItem('currentUser')
+  }
+  currentUser = null
 }
 
 export const login = (username, password) => put(`${config.root}/login`)({ username, password })
@@ -37,5 +57,12 @@ export const login = (username, password) => put(`${config.root}/login`)({ usern
     const { token, user } = response
     if (token) setToken(token)
     if (user) setCurrentUser(user)
+    return response
+  })
+
+export const logout = _ => put(`${config.root}/logout`)()
+  .then(response => {
+    removeToken()
+    removeCurrentUser()
     return response
   })
