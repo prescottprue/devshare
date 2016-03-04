@@ -22,7 +22,7 @@ describe('Auth', () => {
         })
     })
 
-    it('successfully call server endpoint', () =>
+    it('calls endpoint', () =>
       auth
         .login(username, password)
         .should.eventually.have.deep.property('user.username', username)
@@ -56,13 +56,13 @@ describe('Auth', () => {
         })
     })
 
-    it('successfully call server endpoint', () =>
+    it('calls endpoint', () =>
       auth
         .logout()
         .should.eventually.have.property('message', 'logout successful')
     )
 
-    it('token is cleared from cookie', () =>
+    it('clears token from cookie', () =>
       auth
         .logout()
         .should.be.fulfilled
@@ -71,12 +71,49 @@ describe('Auth', () => {
         })
     )
 
-    it('current user is removed', () =>
+    it('removes current user from session storage', () =>
       auth
         .logout()
         .should.be.fulfilled
         .then(_ => {
           return expect(window.sessionStorage.getItem('currentUser')).to.be.null
+        })
+    )
+  })
+
+  describe('signup', () => {
+    beforeEach(() => {
+      nock(`${config.root}`)
+        .post(`/signup`, { username, password, name, email })
+        .reply(200, {
+          user: {
+            username, email, name
+          },
+          token
+        })
+    })
+
+    it('calls endpoint', () =>
+      auth
+        .signup({ username, password, name, email })
+        .should.eventually.have.deep.property('user.username', username)
+    )
+
+    it('saves the token', () =>
+      auth
+        .signup({ username, password, name, email })
+        .should.be.fulfilled
+        .then(_ => {
+          return cookie.parse(document.cookie).should.have.property('token', token)
+        })
+    )
+
+    it('saves the current user', () =>
+      auth
+        .signup({ username, password, name, email })
+        .should.be.fulfilled
+        .then(_ => {
+          return JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username)
         })
     )
   })

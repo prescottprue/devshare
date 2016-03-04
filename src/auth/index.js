@@ -1,6 +1,6 @@
 import cookie from 'cookie'
 import config from '../../config.json'
-import { put } from '../utils/cruder'
+import { put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
 
 let token
@@ -64,5 +64,13 @@ export const logout = _ => put(`${config.root}/logout`)()
   .then(response => {
     removeToken()
     removeCurrentUser()
+    return response
+  })
+
+export const signup = userInfo => post(`${config.root}/signup`)(userInfo)
+  .then(response => {
+    const { token, user } = response
+    if (token) setToken(token)
+    if (user) setCurrentUser(user)
     return response
   })
