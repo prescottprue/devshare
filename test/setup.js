@@ -10,11 +10,10 @@ var Promise = require('es6-promise').Promise
 global.Promise = Promise
 
 var jsdom = require('jsdom')
-var doc = jsdom.jsdom("<html><body></body></html>")
+var doc = jsdom.jsdom('<html><body></body></html>')
 var win = doc.defaultView
 global.document = doc
 global.window = win
 global.navigator = win.navigator
 
-var sinon = global.sinon = require('sinon')
 window.sessionStorage = require('./utils/storageMock')()

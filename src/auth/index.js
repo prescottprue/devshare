@@ -52,25 +52,28 @@ const removeCurrentUser = _ => {
   currentUser = null
 }
 
-export const login = (username, password) => put(`${config.root}/login`)({ username, password })
-  .then(response => {
-    const { token, user } = response
-    if (token) setToken(token)
-    if (user) setCurrentUser(user)
-    return response
-  })
+export const login = (username, password) =>
+  put(`${config.root}/login`)({ username, password })
+    .then(response => {
+      const { token, user } = response
+      if (token) setToken(token)
+      if (user) setCurrentUser(user)
+      return response
+    })
 
-export const logout = _ => put(`${config.root}/logout`)()
-  .then(response => {
-    removeToken()
-    removeCurrentUser()
-    return response
-  })
+export const logout = _ =>
+  put(`${config.root}/logout`)()
+    .then(response => {
+      removeToken()
+      removeCurrentUser()
+      return response
+    })
 
-export const signup = userInfo => post(`${config.root}/signup`)(userInfo)
-  .then(response => {
-    const { token, user } = response
-    if (token) setToken(token)
-    if (user) setCurrentUser(user)
-    return response
-  })
+export const signup = userInfo =>
+  post(`${config.root}/signup`)(userInfo)
+    .then(response => {
+      const { token, user } = response
+      if (token) setToken(token)
+      if (user) setCurrentUser(user)
+      return response
+    })

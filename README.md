@@ -15,8 +15,7 @@ Client library to simplify communication with the devShare service which is buil
 devShare is universal, so it can be used client-side or server-side.
 
 ### NPM
-1. Install:
-    `npm install --save devshare`
+1. Install: `npm install --save devshare`
 
 2. Include and use `devshare`:
 
@@ -40,4 +39,4 @@ devShare is universal, so it can be used client-side or server-side.
 
 ## Documentation
 
-### [API Documentation](https://github.com/KyperTech/devshare/wiki/API-Documentation)
+### [API Documentation](https://kypertech.github.com/devshare)
