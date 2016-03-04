@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import auth from './auth'
 
 const checkResponseError = body => {
   if (body.code >= 400) {

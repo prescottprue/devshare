@@ -53,6 +53,7 @@
   },
   "homepage": "https://github.com/kypertech/devshare",
   "dependencies": {
+    "cookie": "^0.2.3",
     "firebase": "^2.4.0",
     "isomorphic-fetch": "^2.2.1",
     "jszip": "^2.5.0",
