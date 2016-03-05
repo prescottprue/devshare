@@ -7,15 +7,15 @@ Signup with devshare
 ```javascript
 //Signup a new user
 import { signup } from 'devshare'
-var signupData =
+
 signup({
   username: 'testuser1',
   email: 'test@email.com',
   password: 'testpassword'
 }).then(function(signupRes){
-  console.log('New user signed up successfully. New user: ', signupRes.user)
+  console.log('new user signed up successfully. New user: ', signupRes.user)
 }, function(err){
-  console.error('Error signing up:', err)
+  console.error('error signing up:', err)
 })
 ```
 
@@ -25,10 +25,11 @@ Log into application
 
 ```javascript
 import { login } from 'devshare'
+
 login('username', 'password').then(function(loginRes){
-  console.log('Logged in succesfully. User: ', loginRes.user)
+  console.log('logged in successfully. User: ', loginRes.user)
 }, function(err){
-  console.error('Error logging in:', err)
+  console.error('error logging in:', err)
 })
 ```
 
@@ -38,6 +39,7 @@ Logout of currently logged in user
 
 ```javascript
 import { logout } from 'devshare'
+
 logout().then(function(loginRes){
   console.log('Logged out successfully')
 })
@@ -49,10 +51,11 @@ Get the account for the currently logged in user
 
 ```javascript
 import { getCurrentUser } from 'devshare'
+
 getCurrentUser().then(function(currentUser){
   console.log('Currently logged in user:', currentUser)
 }, function(err){
-  console.error('Error getting current user', err)
+  console.error('error getting current user', err)
 })
 ```
 
@@ -64,7 +67,7 @@ Recover user by providing username
 recover('testUser').then(function(updatedUser){
   console.log('Currently logged in user:', updatedUser)
 }, function(err){
-  console.error('Error updating profile:', err)
+  console.error('error updating profile:', err)
 })
 ```
 
@@ -77,6 +80,6 @@ import { uploadAvatar } from 'devshare'
 uploadAvatar(file).then(function(imgUrl){
   console.log('Avatar uploaded:', imgUrl)
 }, function(err){
-  console.error('Error uploading image:', err)
+  console.error('error uploading image:', err)
 })
 ```

@@ -4,5 +4,4 @@
 * [API Reference](/docs/api/README.md)
   * [Authentication](/docs/api/authentication.md)
   * [Projects](/docs/api/projects.md)
-  * [User](/docs/api/user.md)
   * [Users](/docs/api/users.md)
