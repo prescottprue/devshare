@@ -1,14 +1,17 @@
+/* global describe it beforeEach */
+import fileSystem from '../../src/project/file-system'
+
 describe('File System', () => {
-	beforeEach(() => {
+  beforeEach(() => {
+  })
 
-	})
-	afterEach(() => {
+  afterEach(() => {
+  })
 
-	})
-
-	// describe('constructor', () => {
-	// 	it('has unit test scaffolding', () => {
-	// 		expect(1).to.equal(1)
-	// 	})
-	// })
+  describe('get', () => {
+    it('gets project', () =>
+			fileSystem('mel', 'jazztoes')
+				.get().should.eventually.have.property('src')
+		)
+  })
 })

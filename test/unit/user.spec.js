@@ -1,11 +1,11 @@
 /* global describe it beforeEach nock */
-import { user } from '../../src'
-import config from '../../src/config.json'
+import user from '../../src/user'
+import config from '../../src/config'
 
 describe('User', () => {
   describe('get', () => {
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .get(`/users/mel`)
         .reply(200, {
           username: 'mel'
@@ -25,14 +25,14 @@ describe('User', () => {
     let collaborators = [username]
 
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .post('/users/mel/projects', {
           name: projectname
         })
         .reply(200, {
           name: projectname
         })
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .post('/users/mel/projects', {
           name: projectname,
           collaborators

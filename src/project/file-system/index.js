@@ -1,18 +1,17 @@
 import Entity from './entity'
+import firebaser from '../../utils/firebaser'
 
-class FileSystem {
-  constructor (config) {
-    this.configStuff = config.stuff
+export default (owner, projectname) => {
+  const relativePath = ['files', owner, projectname]
+
+  const methods = {
+    // rename: newProjectname =>
+    //   update(url)({ name: newProjectname }),
   }
 
-  entity (path) {
-    return new Entity(path)
-  }
-}
-
-let fileSystem = null
-
-export default function (config) {
-  if (!fileSystem) fileSystem = new FileSystem(config)
-  return fileSystem
+  return Object.assign(
+    {},
+    firebaser(relativePath, ['get', 'set', 'sync']),
+    methods
+  )
 }

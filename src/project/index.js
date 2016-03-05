@@ -1,8 +1,9 @@
-import config from '../config.json'
+import config from '../config'
 import cruder, { update, remove } from '../utils/cruder'
+import fileSystem from './file-system'
 
 export default (owner, projectname) => {
-  const url = `${config.root}/projects/${owner}/${projectname}`
+  const url = `${config.tessellateRoot}/projects/${owner}/${projectname}`
 
   const methods = {
     rename: newProjectname =>
@@ -15,9 +16,14 @@ export default (owner, projectname) => {
       remove(`${url}/collaborators/${username}`)()
   }
 
+  const subModels = {
+    fileSystem: fileSystem(owner, projectname)
+  }
+
   return Object.assign(
     {},
     cruder(url, ['get', 'remove']),
-    methods
+    methods,
+    subModels
   )
 }

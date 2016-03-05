@@ -1,5 +1,5 @@
 import cookie from 'cookie'
-import config from '../config.json'
+import config from '../config'
 import { put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
 
@@ -53,7 +53,7 @@ const removeCurrentUser = _ => {
 }
 
 export const login = (username, password) =>
-  put(`${config.root}/login`)({ username, password })
+  put(`${config.tessellateRoot}/login`)({ username, password })
     .then(response => {
       const { token, user } = response
       if (token) setToken(token)
@@ -62,7 +62,7 @@ export const login = (username, password) =>
     })
 
 export const logout = _ =>
-  put(`${config.root}/logout`)()
+  put(`${config.tessellateRoot}/logout`)()
     .then(response => {
       removeToken()
       removeCurrentUser()
@@ -70,10 +70,17 @@ export const logout = _ =>
     })
 
 export const signup = userInfo =>
-  post(`${config.root}/signup`)(userInfo)
+  post(`${config.tessellateRoot}/signup`)(userInfo)
     .then(response => {
       const { token, user } = response
       if (token) setToken(token)
       if (user) setCurrentUser(user)
       return response
     })
+
+export default {
+  getCurrentUser,
+  login,
+  logout,
+  signup
+}

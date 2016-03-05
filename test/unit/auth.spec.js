@@ -1,7 +1,7 @@
 /* global describe it expect beforeEach nock */
 import * as auth from '../../src/auth'
 import cookie from 'cookie'
-import config from '../../src/config.json'
+import config from '../../src/config'
 
 describe('Auth', () => {
   const username = 'crazyDude'
@@ -12,7 +12,7 @@ describe('Auth', () => {
 
   describe('login', () => {
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .put(`/login`, { username, password })
         .reply(200, {
           user: {
@@ -49,7 +49,7 @@ describe('Auth', () => {
 
   describe('logout', () => {
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .put(`/logout`)
         .reply(200, {
           message: 'logout successful'
@@ -83,7 +83,7 @@ describe('Auth', () => {
 
   describe('signup', () => {
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .post(`/signup`, { username, password, name, email })
         .reply(200, {
           user: {

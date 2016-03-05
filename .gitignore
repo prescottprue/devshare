@@ -1,6 +1,7 @@
 node_modules
 coverage
 repl.js
+*.log
 
 lib
 dist

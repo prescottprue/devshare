@@ -1,8 +1,8 @@
-import config from '../config.json'
+import config from '../config'
 import cruder, { create } from '../utils/cruder'
 
 export default (username) => {
-  const url = `${config.root}/users/${username}`
+  const url = `${config.tessellateRoot}/users/${username}`
 
   const methods = {
     createProject: (projectname, collaborators) =>

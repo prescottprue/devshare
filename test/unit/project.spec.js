@@ -1,11 +1,11 @@
 /* global describe it beforeEach nock */
-import { project } from '../../src'
-import config from '../../src/config.json'
+import project from '../../src/project'
+import config from '../../src/config'
 
 describe('Project', () => {
   describe('get', () => {
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .get('/projects/mel/goobaly')
         .reply(200, {
           name: 'goobaly'
@@ -21,7 +21,7 @@ describe('Project', () => {
 
   describe('remove', () => {
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .delete('/projects/mel/goobaly')
         .reply(200, {
           name: 'goobaly'
@@ -40,7 +40,7 @@ describe('Project', () => {
     let projectname = 'jazztoes'
 
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .put(`/projects/mel/${oldProjectname}`, {
           name: projectname
         })
@@ -61,7 +61,7 @@ describe('Project', () => {
     let username = 'scott'
 
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .put(`/projects/mel/${projectname}/collaborators/${username}`)
         .reply(200, {
           collaborators: [
@@ -86,7 +86,7 @@ describe('Project', () => {
     let username = 'scott'
 
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .put(`/projects/mel/${projectname}/collaborators`)
         .reply(200, {
           collaborators: [
@@ -109,7 +109,7 @@ describe('Project', () => {
     let username = 'scott'
 
     beforeEach(() => {
-      nock(`${config.root}`)
+      nock(`${config.tessellateRoot}`)
         .delete(`/projects/mel/${projectname}/collaborators/${username}`)
         .reply(200, {
           message: 'collaborator successfully deleted'
