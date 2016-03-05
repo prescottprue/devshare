@@ -1,4 +1,4 @@
-import config from '../../config.json'
+import config from '../config.json'
 import cruder, { create } from '../utils/cruder'
 
 export default (username) => {

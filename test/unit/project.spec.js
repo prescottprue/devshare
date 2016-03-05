@@ -1,6 +1,6 @@
 /* global describe it beforeEach nock */
 import { project } from '../../src'
-import config from '../../config.json'
+import config from '../../src/config.json'
 
 describe('Project', () => {
   describe('get', () => {
@@ -77,6 +77,29 @@ describe('Project', () => {
     it('adds a collaborator to the project', () =>
       project('mel', projectname)
         .addCollaborator(username)
+        .should.eventually.have.deep.property('collaborators[0].username', username)
+    )
+  })
+
+  describe('addCollaborators', () => {
+    let projectname = 'jazztoes'
+    let username = 'scott'
+
+    beforeEach(() => {
+      nock(`${config.root}`)
+        .put(`/projects/mel/${projectname}/collaborators`)
+        .reply(200, {
+          collaborators: [
+            { username },
+            { username }
+          ],
+          name: projectname
+        })
+    })
+
+    it('adds a collaborators to the project', () =>
+      project('mel', projectname)
+        .addCollaborators([{ username }, { username }])
         .should.eventually.have.deep.property('collaborators[0].username', username)
     )
   })

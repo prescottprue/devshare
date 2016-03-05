@@ -1,7 +1,7 @@
 /* global describe it expect beforeEach nock */
 import * as auth from '../../src/auth'
 import cookie from 'cookie'
-import config from '../../config.json'
+import config from '../../src/config.json'
 
 describe('Auth', () => {
   const username = 'crazyDude'

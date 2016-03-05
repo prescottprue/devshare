@@ -1,6 +1,6 @@
 /* global describe it beforeEach nock */
 import { user } from '../../src'
-import config from '../../config.json'
+import config from '../../src/config.json'
 
 describe('User', () => {
   describe('get', () => {

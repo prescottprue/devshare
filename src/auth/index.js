@@ -1,5 +1,5 @@
 import cookie from 'cookie'
-import config from '../../config.json'
+import config from '../config.json'
 import { put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
 
