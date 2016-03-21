@@ -1,11 +1,13 @@
-/* global describe it beforeEach */
+/* global describe it beforeEach afterEach */
 import fileSystem from '../../src/project/file-system'
 
 describe('File System', () => {
   beforeEach(() => {
+
   })
 
   afterEach(() => {
+
   })
 
   describe('get', () => {

@@ -12,7 +12,6 @@ export default Object.assign(
   devshare,
   _auth
 )
-
 export const project = _project
 export const user = _user
 export const auth = _auth
