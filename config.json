@@ -1,0 +1,13 @@
+{
+  "library": {
+    "export": "Devshare",
+    "file": "devshare"
+  },
+  "folders": {
+    "dist": "dist"
+  },
+  "cdn": {
+    "bucket": "kyper-cdn",
+    "prefix": "devshare"
+  }
+}

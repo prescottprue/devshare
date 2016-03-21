@@ -105,8 +105,8 @@ describe('Project', () => {
   })
 
   describe('removeCollaborator', () => {
-    let projectname = 'jazztoes'
-    let username = 'scott'
+    const projectname = 'jazztoes'
+    const username = 'scott'
 
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)

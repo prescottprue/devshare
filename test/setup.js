@@ -6,7 +6,7 @@ var should = global.should = chai.should()
 var chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
 
-var sinon = global.sinon = require('sinon')
+// var sinon = global.sinon = require('sinon')
 
 var nock = global.nock = require('nock')
 

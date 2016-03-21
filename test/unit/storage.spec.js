@@ -1,14 +1,15 @@
+/* global describe beforeEach afterEach */
 describe('Storage', () => {
-	beforeEach(() => {
+  beforeEach(() => {
 
-	})
-	afterEach(() => {
+  })
+  afterEach(() => {
 
-	})
+  })
 
-	// describe('constructor', () => {
-	// 	it('has unit test scaffolding', () => {
-	// 		expect(1).to.equal(1)
-	// 	})
-	// })
+  // describe('constructor', () => {
+  //   it('has unit test scaffolding', () => {
+  //     expect(1).to.equal(1)
+  //   })
+  // })
 })

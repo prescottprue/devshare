@@ -4,7 +4,7 @@ import _auth from './auth'
 
 const devshare = {
   project: _project,
-  user: _user,
+  user: _user
 }
 
 export default Object.assign(
