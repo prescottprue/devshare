@@ -45,6 +45,18 @@ describe('Auth', () => {
           return JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username)
         })
     )
+
+    it('accepts an object', () =>
+      auth
+        .login({ username, password })
+        .should.eventually.have.deep.property('user.username', username)
+    )
+
+    it('rejects if no params are passed', () =>
+      auth
+        .login()
+        .should.eventually.be.rejected
+    )
   })
 
   describe('logout', () => {

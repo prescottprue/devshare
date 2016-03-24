@@ -1,3 +1,4 @@
+import { isObject } from 'lodash'
 import cookie from 'cookie'
 import config from '../config'
 import { put, post } from '../utils/cruder'
@@ -41,14 +42,20 @@ const removeCurrentUser = _ => {
   currentUser = null
 }
 
-export const login = (username, password) =>
-  put(`${config.tessellateRoot}/login`)({ username, password })
+export const login = (username, password) => {
+  if (!username) return Promise.reject({ message: 'Username or Email is required to login ' })
+  if (isObject(username) && username.password) {
+    password = username.password
+    username = username.username
+  }
+  return put(`${config.tessellateRoot}/login`)({ username, password })
     .then(response => {
       const { token, user } = response
       if (token) setToken(token)
       if (user) setCurrentUser(user)
       return response
     })
+}
 
 export const logout = _ =>
   put(`${config.tessellateRoot}/logout`)()
