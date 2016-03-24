@@ -11,44 +11,33 @@ export const createHeaders = _ => {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   }
-  if (isBrowser()) {
-    return header
-  }
+  if (isBrowser()) return header
   header.Authorization = `Bearer ${token}`
   return header
 }
 
 const setToken = nextToken => {
-  if (isBrowser()) {
-    document.cookie = cookie.serialize('token', nextToken)
-  }
+  if (isBrowser()) document.cookie = cookie.serialize('token', nextToken)
   token = nextToken
 }
 
 const removeToken = _ => {
-  if (isBrowser()) {
-    document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-  }
+  if (isBrowser()) document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+  token = null
 }
 
 export const getCurrentUser = _ => {
-  if (isBrowser()) {
-    currentUser = window.sessionStorage.getItem('currentUser')
-  }
+  if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
   return JSON.parse(currentUser)
 }
 
 const setCurrentUser = nextCurrentUser => {
-  if (isBrowser()) {
-    window.sessionStorage.setItem('currentUser', JSON.stringify(nextCurrentUser))
-  }
+  if (isBrowser()) window.sessionStorage.setItem('currentUser', JSON.stringify(nextCurrentUser))
   currentUser = nextCurrentUser
 }
 
 const removeCurrentUser = _ => {
-  if (isBrowser()) {
-    window.sessionStorage.removeItem('currentUser')
-  }
+  if (isBrowser()) window.sessionStorage.removeItem('currentUser')
   currentUser = null
 }
 

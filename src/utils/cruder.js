@@ -11,24 +11,16 @@ const handleResponse = body => {
 
 export const get = url => _ =>
   fetch(url, { headers: createHeaders() })
-    .then(response => {
-      return response.json()
-    })
-    .then(body => {
-      return handleResponse(body)
-    })
+    .then(response => response.json())
+    .then(body => handleResponse(body))
 
 export const remove = url => _ =>
   fetch(url, {
     method: 'delete',
     headers: createHeaders()
   })
-    .then(response => {
-      return response.json()
-    })
-    .then(body => {
-      return handleResponse(body)
-    })
+    .then(response => response.json())
+    .then(body => handleResponse(body))
 
 export const put = url => object =>
   fetch(url, {
@@ -36,12 +28,8 @@ export const put = url => object =>
     headers: createHeaders(),
     body: JSON.stringify(object)
   })
-    .then(response => {
-      return response.json()
-    })
-    .then(body => {
-      return handleResponse(body)
-    })
+    .then(response => response.json())
+    .then(body => handleResponse(body))
 
 export const post = url => object =>
   fetch(url, {
@@ -49,12 +37,8 @@ export const post = url => object =>
     headers: createHeaders(),
     body: JSON.stringify(object)
   })
-    .then(response => {
-      return response.json()
-    })
-    .then(body => {
-      return handleResponse(body)
-    })
+    .then(response => response.json())
+    .then(body => handleResponse(body))
 
 export const add = post
 export const create = post

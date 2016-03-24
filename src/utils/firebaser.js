@@ -1,6 +1,5 @@
 import config from '../config'
 import Firebase from 'firebase'
-import { thru } from 'lodash'
 
 const createFirebaseRef = relativePath =>
   new Firebase(

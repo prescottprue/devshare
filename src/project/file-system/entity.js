@@ -1,5 +1,5 @@
 
-class Entity {
+export default class Entity {
   constructor (path) {
     this.path = path
   }
@@ -44,5 +44,3 @@ class Entity {
   rename () {
   }
 }
-
-export default Entity

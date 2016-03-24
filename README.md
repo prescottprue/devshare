@@ -9,7 +9,16 @@
 [![License][license-image]][license-url]
 [![Code Style][code-style-image]][code-style-url]
 
-Client library to simplify communication with the devShare service which is built on the Tessellate application building platform.
+[![Gitter][gitter-image]][gitter-url]
+
+>Client library to simplify communication with the devShare service
+
+## Features
+
+* File system interaction
+* Projects management
+* Users management
+* Cloud interface
 
 ## Getting Started
 
@@ -21,8 +30,8 @@ devShare is universal, so it can be used client-side or server-side.
 2. Include and use `devshare`:
 
     ```javascript
-  import { createClient } from 'devshare';
-  let devshare = createClient(auth);
+  import Devshare from 'devshare';
+  Devshare.login(auth).then(user => console.log('Successful login', user))
     ```
 
 ### CDN
@@ -32,15 +41,26 @@ devShare is universal, so it can be used client-side or server-side.
       <script src="http://cdn.kyper.io/js/devshare/latest/devshare.js"></script>
       ```
 
-  2. Create the client:
+  2. Start using the library:
 
     ```javascript
-    var devshare = Devshare.createClient(auth);
+    const username = 'scott'
+    const password = 'testpassword'
+    // Login in order to make Authenticated requests
+    Devshare.login(username, password).then(user => console.log('Successful login', user))
+
+    // Get a specific user
+    Devshare.user(username).get().then(user => console.log('user loaded:', user))
+
+    const projectName = 'example'
+    // Get a specific project
+    Devshare.project(username, projectName).get().then(res => console.log('project:', res))
     ```
 
 ## Documentation
 
 ### [API Documentation](https://kypertech.github.com/devshare)
+
 
 
 [npm-image]: https://img.shields.io/npm/v/devshare.svg?style=flat-square
@@ -58,3 +78,6 @@ devShare is universal, so it can be used client-side or server-side.
 [license-url]: https://github.com/KyperTech/devshare/blob/master/LICENSE
 [code-style-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [code-style-url]: http://standardjs.com/
+
+[gitter-image]: https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square
+[gitter-url]: https://gitter.im/KyperTech/devshare
