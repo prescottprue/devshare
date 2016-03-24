@@ -1,24 +1,53 @@
-/* global Devshare */
-console.log('Devshare', window.Devshare)
+/* eslint-disable no-unused-vars */
+/* global devshare */
+let devshare = window.Devshare.default
+console.log('Devshare', devshare)
 
-function getCurrentUser () {
-  console.warn('user', Devshare.user('scott'))
-  Devshare.user('scott').get().then(res => console.log('user loaded:', res))
+setStatus()
+
+function login () {
+  var username = document.getElementById('login-username').value
+  var password = document.getElementById('login-password').value
+  return devshare.login(username, password).then(res => setStatus())
 }
 
-function getAUser (username) {
-  Devshare.user(username).get()
+function signup () {
+  var username = document.getElementById('signup-username').value
+  var password = document.getElementById('signup-password').value
+  var name = document.getElementById('signup-name').value
+  var email = document.getElementById('signup-email').value
+  return devshare.signup({ username: username, email: email, password: password, name: name }).then(res => setStatus())
 }
 
+function getUser (username) {
+  return devshare.user(username).get().then(res => console.log('user loaded:', res))
+}
 
-// function getCurrentUser () {
-//   Devshare.auth.getCurrentUser()
-// }
+function currentUser () {
+  return devshare.currentUser()
+}
 
 function getProject () {
-  Devshare.project('scott', 'angularExample').get().then(res => console.log('project:', res))
+  devshare.project('scott', 'angularExample').get().then(res => console.log('project:', res))
 }
 
 function addProject () {
-  Devshare.project('scott', 'angularExample').add().then(res => console.log('project:', res))
+  devshare.project('scott', 'angularExample').add().then(res => console.log('project:', res))
+}
+
+// Set status styles
+function setStatus () {
+  var statusEl = document.getElementById('status')
+  var logoutButton = document.getElementById('logout-btn')
+
+  if (devshare.currentUser) {
+    statusEl.innerHTML = 'True'
+    statusEl.style.color = 'green'
+    // statusEl.className = statusEl.className ? ' status-loggedIn' : 'status-loggedIn'
+    logoutButton.style.display = 'inline'
+  } else {
+    statusEl.innerHTML = 'False'
+    statusEl.style.color = 'red'
+    logoutButton.style.display = 'none'
+  }
 }

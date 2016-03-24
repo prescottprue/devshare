@@ -75,6 +75,10 @@ export const signup = userInfo =>
     })
 
 export default {
+  get currentUser () {
+    if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
+    return JSON.parse(currentUser)
+  },
   getCurrentUser,
   login,
   logout,
