@@ -40,6 +40,14 @@ export const post = url => object =>
     .then(response => response.json())
     .then(body => handleResponse(body))
 
+export const search = url => (key, query) =>
+  fetch(`${url}/search?${key}=${query}`, {
+    method: 'get',
+    headers: createHeaders()
+  })
+    .then(response => response.json())
+    .then(body => handleResponse(body))
+
 export const add = post
 export const create = post
 export const update = put
