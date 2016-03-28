@@ -1,58 +1,34 @@
 /* global describe it beforeEach nock */
-import user from '../../src/user'
+import users from '../../src/users'
 import config from '../../src/config'
 
-describe('User', () => {
-  describe('get', () => {
+describe('Users', () => {
+  describe('search', () => {
+    const usernameQuery = 'tes'
+    const emailQuery = 'testuser@gmail.com'
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .get(`/users/mel`)
+        .get(`/users/search?username=${usernameQuery}`)
         .reply(200, {
-          username: 'mel'
+          username: 'testuser'
+        })
+      nock(`${config.tessellateRoot}`)
+        .get(`/users/search?email=${emailQuery}`)
+        .reply(200, {
+          email: 'testuser@gmail.com'
         })
     })
 
-    it('gets the user', () =>
-      user('mel')
-        .get()
-        .should.eventually.have.property('username')
-    )
-  })
-
-  describe('createProject', () => {
-    let projectname = 'chamunga'
-    let username = 'scott'
-    let collaborators = [username]
-
-    beforeEach(() => {
-      nock(`${config.tessellateRoot}`)
-        .post('/users/mel/projects', {
-          name: projectname
-        })
-        .reply(200, {
-          name: projectname
-        })
-      nock(`${config.tessellateRoot}`)
-        .post('/users/mel/projects', {
-          name: projectname,
-          collaborators
-        })
-        .reply(200, {
-          name: projectname,
-          collaborators: [
-            {
-              username
-            }
-          ]
-        })
-    })
-
-    it('searches', () =>
-      user('mel')
-        .createProject(projectname)
-        .should.eventually.have.property('name', projectname)
+    it('searches by username', () =>
+      users()
+        .search(usernameQuery)
+        .should.eventually.have.property('username', 'testuser')
     )
 
-
+    it('searches by email', () =>
+      users()
+        .search(emailQuery)
+        .should.eventually.have.property('email', emailQuery)
+    )
   })
 })
