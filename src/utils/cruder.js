@@ -41,12 +41,13 @@ export const post = url => object =>
     .then(body => handleResponse(body))
 
 export const search = url => (key, query) =>
-  fetch(`${url}/search?${key}=${query}`, {
+  query ? fetch(`${url}/search?${key}=${query}`, {
     method: 'get',
     headers: createHeaders()
   })
     .then(response => response.json())
     .then(body => handleResponse(body))
+  : Promise.reject({ message: 'query is required to search' })
 
 export const add = post
 export const create = post

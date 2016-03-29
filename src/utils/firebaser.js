@@ -1,12 +1,13 @@
 import config from '../config'
 import Firebase from 'firebase'
 
+export const createFirebaseUrl = relativePath => _ =>
+  [config.firebaseRoot]
+    .concat(relativePath)
+    .join('/')
+
 const createFirebaseRef = relativePath =>
-  new Firebase(
-    [config.firebaseRoot]
-      .concat(relativePath)
-      .join('/')
-  )
+  new Firebase(createFirebaseUrl(relativePath))
 
 export const get = relativePath => _ =>
   createFirebaseRef(relativePath)
@@ -19,11 +20,15 @@ export const set = ref => object =>
 export const sync = ref => callback =>
   ref.on('value', data => callback(data.val()))
 
+export const getRef = relativePath => _ =>
+  createFirebaseRef(relativePath)
+
 export default (url, types) => {
   let methods = {
     get,
     set,
-    sync
+    sync,
+    createFirebaseUrl
   }
 
   return types

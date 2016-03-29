@@ -1,4 +1,4 @@
-import Entity from './entity'
+// import Entity from './entity'
 import firebaser from '../../utils/firebaser'
 
 export default (owner, projectname) => {
@@ -11,7 +11,7 @@ export default (owner, projectname) => {
 
   return Object.assign(
     {},
-    firebaser(relativePath, ['get', 'set', 'sync']),
+    firebaser(relativePath, ['get', 'set', 'sync', 'createFirebaseUrl']),
     methods
   )
 }

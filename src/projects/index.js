@@ -13,7 +13,7 @@ export default (username) => {
 
   return Object.assign(
     {},
-    cruder(url, ['add']),
+    cruder(url, ['get', 'add']),
     methods
   )
 }
