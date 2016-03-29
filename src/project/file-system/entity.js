@@ -1,46 +1,35 @@
+import firebaser from '../../utils/firebaser'
 
 export default class Entity {
-  constructor (path) {
-    this.path = path
-  }
-
-  /** Get entity content and meta
-  */
-  get () {
-  }
-
-  /** Get entity content
-  */
-  getContent () {
+  constructor (projectPath, filePath) {
+    this.path = filePath
+    Object.assign(
+      this,
+      firebaser(
+        projectPath.concat([filePath]),
+        ['get', 'update', 'remove']
+      )
+    )
   }
 
   /** Get entity meta data
   */
   getMeta () {
-  }
-
-  /** Add entity to file system
-  */
-  add () {
+    return this.getChild('meta')
   }
 
   /** Move entity within file system
   */
   move () {
-  }
-
-  /** Update entity within file system
-  */
-  update () {
-  }
-
-  /** Remove entity from file system
-  */
-  remove () {
+    // Create new file in new location within file system
+    // this.project.fileSystem.getFirebaseRef()
+    // Delete old version of file
+    this.remove()
   }
 
   /** Give entity a new name
   */
-  rename () {
+  rename (name) {
+    return this.update({ meta: { name } })
   }
 }

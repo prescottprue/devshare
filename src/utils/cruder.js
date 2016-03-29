@@ -65,6 +65,7 @@ export default (url, types) => {
   return types
     .reduce((returnedMethods, type) => {
       let method = {}
+      if (typeof methods[type] === 'undefined') throw Error(`${type} is not a valid method of cruder`)
       method[type] = methods[type].call(this, url)
       return Object.assign({}, returnedMethods, method)
     }, {})
