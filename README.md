@@ -59,7 +59,7 @@ devShare is universal, so it can be used client-side or server-side.
 
 ## Documentation
 
-### [API Documentation](https://kypertech.github.com/devshare)
+### [API Documentation](https://kypertech.gitbooks.io/devshare/content/)
 
 
 

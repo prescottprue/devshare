@@ -1,6 +1,6 @@
 {
   "name": "devshare",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Library to communicate with tessellate application building/managing service.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -22,12 +22,7 @@
     "watch:lib": "npm run build:lib -- --stats --progress --colors --watch",
     "watch": "npm run watch:umd",
     "prepublish": "npm run clean && npm run test && npm run build",
-    "upload": "node ./bin/upload",
-    "docs:clean": "rimraf _book",
-    "docs:prepare": "gitbook install",
-    "docs:build": "npm run docs:prepare && gitbook build -g kypertech/devshare",
-    "docs:watch": "npm run docs:prepare && gitbook serve",
-    "docs:publish": "npm run docs:clean && npm run docs:build && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push git@github.com:kypertech/devshare gh-pages --force"
+    "upload": "node ./bin/upload"
   },
   "repository": {
     "type": "git",
@@ -78,7 +73,6 @@
     "chai-as-promised": "^5.2.0",
     "chai-properties": "^1.2.1",
     "es6-promise": "^3.1.2",
-    "gitbook-cli": "^2.1.2",
     "isparta": "^4.0.0",
     "jsdom": "^8.1.0",
     "json-loader": "^0.5.4",

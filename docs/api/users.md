@@ -1,3 +1,0 @@
-# Users
-
-  *Docs coming soon*
