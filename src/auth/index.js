@@ -3,7 +3,7 @@ import cookie from 'cookie'
 import config from '../config'
 import { put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
-
+import { authWithProvider } from './provider'
 let token
 let currentUser
 
@@ -48,6 +48,7 @@ export const login = (username, password) => {
     password = username.password
     username = username.username
   }
+  if (isObject(username) && username.provider) return authWithProvider(username)
   return put(`${config.tessellateRoot}/login`)({ username, password })
     .then(response => {
       const { token, user } = response
@@ -80,6 +81,7 @@ export default {
     return JSON.parse(currentUser)
   },
   getCurrentUser,
+  authWithProvider,
   login,
   logout,
   signup
