@@ -16,7 +16,18 @@ function signup () {
   var password = document.getElementById('signup-password').value
   var name = document.getElementById('signup-name').value
   var email = document.getElementById('signup-email').value
-  return devshare.signup({ username: username, email: email, password: password, name: name }).then(res => setStatus())
+  return devshare.signup({
+    username: username,
+    email: email,
+    password: password,
+    name: name
+  })
+    .then(res => setStatus())
+}
+
+function authWithProvider (provider) {
+  return devshare.authWithProvider({ provider: provider })
+    .then(res => setStatus())
 }
 
 function getUser (username) {

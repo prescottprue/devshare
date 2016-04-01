@@ -1,8 +1,9 @@
 import { isObject } from 'lodash'
 import cookie from 'cookie'
 import config from '../config'
-import { put, post } from '../utils/cruder'
+import { get, put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
+import { OAuth } from 'oauthio-web' // window/document undefined error
 
 let token
 let currentUser
@@ -48,6 +49,7 @@ export const login = (username, password) => {
     password = username.password
     username = username.username
   }
+  if (isObject(username) && username.provider) return authWithProvider(username)
   return put(`${config.tessellateRoot}/login`)({ username, password })
     .then(response => {
       const { token, user } = response
@@ -74,12 +76,40 @@ export const signup = userInfo =>
       return response
     })
 
+const handleOAuthPopup = (provider, params) =>
+  OAuth
+  .popup(provider, { state: params.token })
+  .done(result => Promise.resolve(result))
+  .fail(error => Promise.reject(error))
+/**
+* @description Authenticate using a token generated from the server (so server and client are both aware of auth state)
+*/
+export const authWithProvider = provider =>
+  get(`${config.tessellateRoot}/stateToken`)()
+    .then(params => {
+      if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
+      OAuth.initialize(config.oauthioKey)
+      return handleOAuthPopup(provider, params).then(result =>
+        post(`${config.tessellateRoot}/auth`)({
+          provider,
+          code: result.code,
+          stateToken: params.token
+        }).then(response => {
+          const { token, user } = response
+          if (token) setToken(token)
+          if (user) setCurrentUser(user)
+          return response
+        })
+      )
+    }).catch(error => Promise.reject(error))
+
 export default {
   get currentUser () {
     if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
     return JSON.parse(currentUser)
   },
   getCurrentUser,
+  authWithProvider,
   login,
   logout,
   signup
