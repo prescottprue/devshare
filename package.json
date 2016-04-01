@@ -1,6 +1,6 @@
 {
   "name": "devshare",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Library to communicate with tessellate application building/managing service.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -56,11 +56,8 @@
     "cookie": "0.2.3",
     "firebase": "2.4.1",
     "isomorphic-fetch": "2.2.1",
-    "jszip": "2.5.0",
     "lodash": "4.6.1",
-    "node-safe-filesaver": "0.1.0",
-    "oauthio-web": "^0.5.2",
-    "qs": "^6.0.2"
+    "oauthio-web": "0.5.2"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
