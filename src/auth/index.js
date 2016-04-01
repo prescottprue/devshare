@@ -1,9 +1,10 @@
 import { isObject } from 'lodash'
 import cookie from 'cookie'
 import config from '../config'
-import { put, post } from '../utils/cruder'
+import { get, put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
-import { authWithProvider } from './provider'
+import { OAuth } from 'oauthio-web' // window/document undefined error
+
 let token
 let currentUser
 
@@ -74,6 +75,30 @@ export const signup = userInfo =>
       if (user) setCurrentUser(user)
       return response
     })
+
+/**
+* @description Authenticate using a token generated from the server (so server and client are both aware of auth state)
+*/
+export const authWithProvider = provider =>
+  get(`${config.tessellateRoot}/stateToken`)()
+    .then(params => {
+      if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
+      OAuth.initialize(config.oauthioKey)
+      return OAuth
+        .popup(provider, { state: params.token })
+        .done(result =>
+          post(`${config.tessellateRoot}/auth`)({
+            provider,
+            code: result.code,
+            stateToken: params.token
+          }).then(response => {
+            console.log('response from auth post:', response)
+            if (response.token) setToken(token)
+            if (response.user) setCurrentUser(Object.create(response.user))
+            return response
+          })
+        ).fail(error => Promise.reject(error))
+    }).catch(error => Promise.reject(error))
 
 export default {
   get currentUser () {
