@@ -76,6 +76,11 @@ export const signup = userInfo =>
       return response
     })
 
+const handleOAuthPopup = (provider, params) =>
+  OAuth
+  .popup(provider, { state: params.token })
+  .done(result => Promise.resolve(result))
+  .fail(error => Promise.reject(error))
 /**
 * @description Authenticate using a token generated from the server (so server and client are both aware of auth state)
 */
@@ -84,20 +89,18 @@ export const authWithProvider = provider =>
     .then(params => {
       if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
       OAuth.initialize(config.oauthioKey)
-      return OAuth
-        .popup(provider, { state: params.token })
-        .done(result =>
-          post(`${config.tessellateRoot}/auth`)({
-            provider,
-            code: result.code,
-            stateToken: params.token
-          }).then(response => {
-            console.log('response from auth post:', response)
-            if (response.token) setToken(token)
-            if (response.user) setCurrentUser(Object.create(response.user))
-            return response
-          })
-        ).fail(error => Promise.reject(error))
+      return handleOAuthPopup(provider, params).then(result =>
+        post(`${config.tessellateRoot}/auth`)({
+          provider,
+          code: result.code,
+          stateToken: params.token
+        }).then(response => {
+          const { token, user } = response
+          if (token) setToken(token)
+          if (user) setCurrentUser(user)
+          return response
+        })
+      )
     }).catch(error => Promise.reject(error))
 
 export default {
