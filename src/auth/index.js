@@ -13,8 +13,8 @@ export const createHeaders = _ => {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   }
-  if (isBrowser()) return header
-  header.Authorization = `Bearer ${token}`
+  if (isBrowser()) return header /* istanbul ignore next  */
+  header.Authorization = `Bearer ${token}` /* istanbul ignore next */
   return header
 }
 
@@ -24,12 +24,14 @@ const setToken = nextToken => {
 }
 
 const removeToken = _ => {
+  /* istanbul ignore else  */
   if (isBrowser()) document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   token = null
 }
 
 export const getCurrentUser = _ => {
   if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
+  /* istanbul ignore next  */
   return JSON.parse(currentUser)
 }
 
@@ -76,19 +78,25 @@ export const signup = userInfo =>
       return response
     })
 
+/**
+* @description Open oauth popup and handle result
+*/
 const handleOAuthPopup = (provider, params) =>
   OAuth
   .popup(provider, { state: params.token })
   .done(result => Promise.resolve(result))
   .fail(error => Promise.reject(error))
+
 /**
 * @description Authenticate using a token generated from the server (so server and client are both aware of auth state)
 */
 export const authWithProvider = provider =>
   get(`${config.tessellateRoot}/stateToken`)()
     .then(params => {
+      /* istanbul ignore if  */
       if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
       OAuth.initialize(config.oauthioKey)
+      /* istanbul ignore next */
       return handleOAuthPopup(provider, params).then(result =>
         post(`${config.tessellateRoot}/auth`)({
           provider,
@@ -106,7 +114,8 @@ export const authWithProvider = provider =>
 export default {
   get currentUser () {
     if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
-    return JSON.parse(currentUser)
+    /* istanbul ignore next  */
+    return JSON.parse(currentUser || null)
   },
   getCurrentUser,
   authWithProvider,

@@ -12,7 +12,7 @@ export default () => {
 
   return Object.assign(
     {},
-    cruder(url, ['add']),
-    methods
+    methods,
+    cruder(url, ['add'])
   )
 }

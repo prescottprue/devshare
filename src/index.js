@@ -18,4 +18,5 @@ export default Object.assign(
 )
 export const project = _project
 export const user = _user
+export const users = _users
 export const auth = _auth

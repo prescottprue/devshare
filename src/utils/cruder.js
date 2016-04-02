@@ -3,7 +3,7 @@ import { createHeaders } from '../auth'
 
 const handleResponse = body => {
   if (body.code >= 400) {
-    const { message, status } = body
+    const { message, status } = body /* istanbul ignore next */
     return Promise.reject({ message, status })
   }
   return body

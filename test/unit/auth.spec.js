@@ -1,5 +1,5 @@
 /* global describe it expect beforeEach nock */
-import * as auth from '../../src/auth'
+import auth from '../../src/auth'
 import cookie from 'cookie'
 import config from '../../src/config'
 
@@ -124,5 +124,31 @@ describe('Auth', () => {
           return JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username)
         })
     )
+  })
+  describe('authWithProvider', () => {
+    beforeEach(() => {
+      nock(`${config.tessellateRoot}`)
+        .get(`/stateToken`)
+        .reply(200, {
+          message: 'Success'
+        })
+    })
+
+    it('calls endpoint', () =>
+      auth
+        .authWithProvider({ provider: 'google' })
+        .should.be.rejected
+    )
+  })
+  describe('getCurrentUser', () => {
+    it('gets user', () => {
+      const currentUser = auth.getCurrentUser()
+      expect(currentUser).to.be.an('object')
+    })
+  })
+  describe('currentUser', () => {
+    it('gets user', () => {
+      expect(auth.currentUser).to.be.an('object')
+    })
   })
 })

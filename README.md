@@ -29,12 +29,28 @@ devShare is universal, so it can be used client-side or server-side.
 
 2. Include and use `devshare`:
 
+  #### ES6
     ```javascript
-  import Devshare from 'devshare';
-  Devshare.login(auth).then(user => console.log('Successful login', user))
+  import devshare from 'devshare'
+  devshare.login(auth)
+    .then(user => console.log('Successful login', user))
+    .catch(error => console.error('Error logging in', error))
+
     ```
 
-### CDN
+  #### ES5
+    ```javascript
+  var devshare = require('devshare')
+  devshare.login(auth)
+    .then(function (user) {
+      console.log('Successful login', user)
+    })
+    .catch(function (error) {
+      console.error('Error logging in', error)
+    })
+    ```
+
+### Browser (CDN)
   1. Add script tag to index.html:
 
       ```html
@@ -47,20 +63,21 @@ devShare is universal, so it can be used client-side or server-side.
     const username = 'scott'
     const password = 'testpassword'
     // Login in order to make Authenticated requests
-    Devshare.login(username, password).then(user => console.log('Successful login', user))
-
-    // Get a specific user
-    Devshare.user(username).get().then(user => console.log('user loaded:', user))
-
-    const projectName = 'example'
-    // Get a specific project
-    Devshare.project(username, projectName).get().then(res => console.log('project:', res))
+    Devshare.login(username, password)
+      .then(user => console.log('Successful login', user))
+      .catch(error => console.error('Error logging in', error))
     ```
 
-## Documentation
+    ```javascript
+    const username = 'scott'
+    // Get a specific user
+    Devshare.user(username)
+      .get()
+      .then(user => console.log('user loaded:', user))
+      .catch(error => console.error('Error getting user', error))
+    ```
 
 ### [API Documentation](https://kypertech.gitbooks.io/devshare/content/)
-
 
 
 [npm-image]: https://img.shields.io/npm/v/devshare.svg?style=flat-square
