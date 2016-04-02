@@ -32,18 +32,14 @@ describe('Auth', () => {
       auth
         .login(username, password)
         .should.be.fulfilled
-        .then(_ => {
-          return cookie.parse(document.cookie).should.have.property('token', token)
-        })
+        .then(_ => cookie.parse(document.cookie).should.have.property('token', token))
     )
 
     it('saves the current user', () =>
       auth
         .login(username, password)
         .should.be.fulfilled
-        .then(_ => {
-          return JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username)
-        })
+        .then(_ => JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username))
     )
 
     it('accepts an object', () =>

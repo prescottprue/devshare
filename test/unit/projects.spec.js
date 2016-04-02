@@ -3,6 +3,27 @@ import projects from '../../src/projects'
 import config from '../../src/config'
 
 describe('Projects', () => {
+  describe('add', () => {
+    let projectname = 'chamunga'
+    let username = 'scott'
+
+    beforeEach(() => {
+      nock(`${config.tessellateRoot}`)
+        .post(`/projects/${username}`, {
+          name: projectname
+        })
+        .reply(200, {
+          name: projectname
+        })
+    })
+
+    it('adds a project', () =>
+      projects(username)
+        .add({ name: projectname })
+        .should.eventually.have.property('name', projectname)
+    )
+  })
+
   describe('search', () => {
     const nameQuery = 'someProj'
     const name = 'someProject'

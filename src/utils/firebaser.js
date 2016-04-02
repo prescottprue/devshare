@@ -3,7 +3,12 @@ import Firebase from 'firebase'
 
 export const createFirebaseUrl = relativePath => _ =>
   [config.firebaseRoot]
-    .concat(relativePath)
+    .concat(
+      relativePath.map(loc =>
+        loc.replace(/[.]/g, ':')
+        .replace(/[#$\[\]]/g, '_-_')
+      )
+    )
     .join('/')
 
 export const createFirebaseRef = relativePath => _ =>
@@ -14,14 +19,19 @@ export const get = relativePath => _ =>
     .once('value')
     .then(data => data.val())
 
-export const set = ref => object =>
-  ref.set(object)
+export const set = relativePath => object =>
+  createFirebaseRef(relativePath)()
+    .set(object)
 
-export const update = relativePath => _ =>
-  createFirebaseRef(relativePath)().update()
+export const update = relativePath => object =>
+  createFirebaseRef(relativePath)()
+    .update(object)
+    .then(data => data.val())
 
 export const remove = relativePath => _ =>
-  createFirebaseRef(relativePath)().remove()
+  createFirebaseRef(relativePath)()
+    .remove()
+    .then(data => null)
 
 export const sync = ref => callback =>
   ref.on('value', data => callback(data.val()))

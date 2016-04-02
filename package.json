@@ -1,6 +1,6 @@
 {
   "name": "devshare",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Library to communicate with tessellate application building/managing service.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -54,7 +54,7 @@
   "homepage": "https://github.com/kypertech/devshare",
   "dependencies": {
     "cookie": "0.2.3",
-    "firebase": "2.4.1",
+    "firebase": "2.4.2",
     "isomorphic-fetch": "2.2.1",
     "lodash": "4.6.1",
     "oauthio-web": "0.5.2"

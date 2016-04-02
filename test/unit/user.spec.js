@@ -18,45 +18,19 @@ describe('User', () => {
         .should.eventually.have.property('username')
     )
   })
-
-  describe('createProject', () => {
-    let projectname = 'chamunga'
-    let username = 'scott'
-    let collaborators = [username]
-
+  describe('remove', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .post('/users/mel/projects', {
-          name: projectname
-        })
+        .delete(`/users/mel`)
         .reply(200, {
-          name: projectname
-        })
-      nock(`${config.tessellateRoot}`)
-        .post('/users/mel/projects', {
-          name: projectname,
-          collaborators
-        })
-        .reply(200, {
-          name: projectname,
-          collaborators: [
-            {
-              username
-            }
-          ]
+          message: 'Successfully removed project'
         })
     })
 
-    it('creates a project', () =>
+    it('removes the user', () =>
       user('mel')
-        .createProject(projectname)
-        .should.eventually.have.property('name', projectname)
-    )
-
-    it('adds collaborators', () =>
-      user('mel')
-        .createProject(projectname, collaborators)
-        .should.eventually.have.deep.property('collaborators[0].username', username)
+        .remove()
+        .should.eventually.have.property('message')
     )
   })
 })
