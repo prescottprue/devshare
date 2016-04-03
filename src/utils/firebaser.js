@@ -11,8 +11,11 @@ export const createFirebaseUrl = relativePath => _ =>
     )
     .join('/')
 
-export const createFirebaseRef = relativePath => _ =>
-  new Firebase(createFirebaseUrl(relativePath)())
+export const createFirebaseRef = relativePath => _ => {
+  console.debug('relativePath', relativePath)
+  console.debug('firebase url', createFirebaseUrl(relativePath)())
+  return new Firebase(createFirebaseUrl(relativePath)())
+}
 
 export const get = relativePath => _ =>
   createFirebaseRef(relativePath)()

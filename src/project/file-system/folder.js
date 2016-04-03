@@ -1,9 +1,8 @@
-import Entity from './entity'
+import entity from './entity'
 
-export default class File extends Entity {
-  constructor (project, path, entities) {
-    super(project, path)
-    this.entityType = 'folder'
-    this.children = entities
-  }
+export default (relativePath, folderPath, children) => {
+  return Object.assign(
+    {},
+    entity(relativePath, folderPath, 'folder')
+  )
 }
