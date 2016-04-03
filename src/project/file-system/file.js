@@ -39,7 +39,7 @@ export default (projectPath, filePath) => {
           // Load file from original content if no history available
           if (entitySnap.hasChild('original') && !entitySnap.hasChild('history')) {
             // File has not yet been opened in firepad
-            this.content = entitySnap.child('original').val()
+            this.content = entitySnap.child('original').val() /* istanbul ignore next */
             return this.content
           }
           // Use endpoint to get file content (Headless Firepad)
@@ -54,7 +54,8 @@ export default (projectPath, filePath) => {
   )
 }
 
-function modeFromFileExtension (mode) {
+/* istanbul ignore next */
+export function modeFromFileExtension (mode) {
   switch (mode) {
     case 'js':
     case 'json':

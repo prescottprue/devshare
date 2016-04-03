@@ -1,5 +1,5 @@
 import config from '../config'
-import cruder, { search } from '../utils/cruder'
+import cruder, { search, add } from '../utils/cruder'
 
 export default (username) => {
   const url = username
@@ -8,12 +8,22 @@ export default (username) => {
 
   const methods = {
     search: query =>
-      search(url)('name', query)
+      search(url)('name', query),
+    add: project => {
+      const { name } = project
+      if (!name) return Promise.reject({ message: 'name is required' })
+      if (name.match(/[^A-Za-z0-9\-_!,() ]/)) {
+        return Promise.reject({
+          message: 'name may not contain symbols other than: _ ! , ( )'
+        })
+      }
+      return add(url)(project)
+    }
   }
 
   return Object.assign(
     {},
-    cruder(url, ['get', 'add']),
+    cruder(url, ['get']),
     methods
   )
 }

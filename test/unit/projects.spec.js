@@ -5,6 +5,7 @@ import config from '../../src/config'
 describe('Projects', () => {
   describe('add', () => {
     let projectname = 'chamunga'
+    let invalidName = 'asdf?'
     let username = 'scott'
 
     beforeEach(() => {
@@ -21,6 +22,16 @@ describe('Projects', () => {
       projects(username)
         .add({ name: projectname })
         .should.eventually.have.property('name', projectname)
+    )
+    it('handles no name', () =>
+      projects(username)
+        .add({ name: invalidName })
+        .should.eventually.be.rejected
+    )
+    it('handles invalid names', () =>
+      projects(username)
+        .add({ name: invalidName })
+        .should.eventually.be.rejected
     )
   })
 
