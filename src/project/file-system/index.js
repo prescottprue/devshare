@@ -1,4 +1,3 @@
-// import Entity from './entity'
 import firebaser, { createFirebaseUrl, createFirebaseRef } from '../../utils/firebaser'
 import file from './file'
 import entity from './entity'

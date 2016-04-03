@@ -1,12 +1,15 @@
+import { tessellateRoot } from '../../config'
 import entity from './entity'
-import { createFirebaseRef } from '../../utils/firebaser'
+import { set, createFirebaseRef } from '../../utils/firebaser'
+import { get } from '../../utils/cruder'
 import { isArray } from 'lodash'
 
 export default (projectPath, filePath) => {
   const pathArray = isArray(filePath) ? filePath : filePath.split('/')
-  const name = pathArray[pathArray.length - 1]
+  const path = pathArray.join('/')
   const fullPath = projectPath.concat(pathArray)
-
+  const name = pathArray[pathArray.length - 1]
+  const fullUrl = [tessellateRoot].concat([projectPath[1], projectPath[2], projectPath[0]])
   const methods = {
     /**
      * @description File's extension
@@ -25,19 +28,22 @@ export default (projectPath, filePath) => {
       return modeFromFileExtension(this.ext)
     },
 
-    getOriginalContent: () =>
+    setContent: original =>
+      set(fullPath)({ meta: { path, name }, original }),
+
+    getContent: () =>
       createFirebaseRef(fullPath)()
         .once('value')
         .then(entitySnap => {
-          if (!entitySnap || !entitySnap.val()) return Promise.reject({message: 'Entity data does not exist.'})
-          if (entityType !== 'file') return entitySnap.val()
+          if (!entitySnap || !entitySnap.val()) return Promise.reject({ message: 'Entity does not exist.' })
           // Load file from original content if no history available
           if (entitySnap.hasChild('original') && !entitySnap.hasChild('history')) {
             // File has not yet been opened in firepad
             this.content = entitySnap.child('original').val()
             return this.content
           }
-          return Promise.reject({ message: 'no orignal content or has existing history' })
+          // Use endpoint to get file content (Headless Firepad)
+          return get(fullUrl)({ path })
         })
   }
 

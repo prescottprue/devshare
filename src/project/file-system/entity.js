@@ -1,4 +1,9 @@
-import firebaser, { createFirebaseUrl, createFirebaseRef, set } from '../../utils/firebaser'
+import firebaser, {
+  set, get,
+  remove, update,
+  createFirebaseUrl,
+  createFirebaseRef
+  } from '../../utils/firebaser'
 import { isArray } from 'lodash'
 
 export default (projectPath, entityPath, entityType) => {
@@ -14,16 +19,16 @@ export default (projectPath, entityPath, entityType) => {
       createFirebaseRef(fullPath)(),
     add: () =>
       set(fullPath)({ meta: { name, path } }),
-    getMeta: () => this.getChild('meta'),
-    move: () => {
-      // Create new file in new location within file system
-      // this.project.fileSystem.getFirebaseRef()
-      // Delete old version of file
-      // this.remove()
-    },
-    rename: () => {
-      // return this.update({ meta: { name } })
-    }
+    getMeta: () =>
+      get(fullPath)()
+      .then(entity => entity.meta),
+    move: newPath =>
+      get(fullPath)()
+        .then(originalEntity => set(newPath)(originalEntity))
+        .then(remove(fullPath)()),
+    // TODO: Set in new location instead of just changing name
+    rename: newName =>
+      update(fullPath)({ name: newName })
   }
 
   return Object.assign(
