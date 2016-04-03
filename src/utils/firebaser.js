@@ -17,7 +17,7 @@ export const createFirebaseRef = relativePath => _ =>
 export const get = relativePath => _ =>
   createFirebaseRef(relativePath)()
     .once('value')
-    .then(data => data.val())
+    .then(data => Object.assign(data.val(), data))
 
 export const set = relativePath => object =>
   createFirebaseRef(relativePath)()

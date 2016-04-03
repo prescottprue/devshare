@@ -22,6 +22,12 @@ describe('Auth', () => {
         })
     })
 
+    it('rejects null input', () =>
+      auth
+        .login()
+        .should.eventually.be.rejected
+    )
+
     it('calls endpoint', () =>
       auth
         .login(username, password)

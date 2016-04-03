@@ -1,46 +1,61 @@
-import Entity from './entity'
+import { tessellateRoot } from '../../config'
+import entity from './entity'
+import { set, createFirebaseRef } from '../../utils/firebaser'
+import { get } from '../../utils/cruder'
+import { isArray } from 'lodash'
 
-export default class File extends Entity {
-  constructor (path) {
-    super(path)
-    this.entityType = 'file'
+export default (projectPath, filePath) => {
+  const pathArray = isArray(filePath) ? filePath : filePath.split('/')
+  const path = pathArray.join('/')
+  const fullPath = projectPath.concat(pathArray)
+  const name = pathArray[pathArray.length - 1]
+  const fullUrl = [tessellateRoot].concat([projectPath[1], projectPath[2], projectPath[0]])
+  const methods = {
+    /**
+     * @description File's extension
+     * @return {String}
+     */
+    get ext () {
+      let re = /(?:\.([^.]+))?$/
+      return re.exec(name)[1]
+    },
+
+    /**
+     * @description File's syntaxMode for CodeMirror
+     * @return {String}
+     */
+    get syntaxMode () {
+      return modeFromFileExtension(this.ext)
+    },
+
+    setContent: original =>
+      set(fullPath)({ meta: { path, name }, original }),
+
+    getContent: () =>
+      createFirebaseRef(fullPath)()
+        .once('value')
+        .then(entitySnap => {
+          if (!entitySnap || !entitySnap.val()) return Promise.reject({ message: 'Entity does not exist.' })
+          // Load file from original content if no history available
+          if (entitySnap.hasChild('original') && !entitySnap.hasChild('history')) {
+            // File has not yet been opened in firepad
+            this.content = entitySnap.child('original').val() /* istanbul ignore next */
+            return this.content
+          }
+          // Use endpoint to get file content (Headless Firepad)
+          return get(fullUrl)({ path })
+        })
   }
 
-  /**
-   * @description File's extension
-   * @return {String}
-   */
-  get ext () {
-    let re = /(?:\.([^.]+))?$/
-    return re.exec(this.name)[1]
-  }
-
-  /**
-   * @description File's syntaxMode for CodeMirror
-   * @return {String}
-   */
-  get syntaxMode () {
-    return modeFromFileExtension(this.ext)
-  }
-
-  /**
-   * @description Get a file's content from default location (Firebase)
-   */
-  getOriginalContent () {
-    return this.get().then(fileSnap => {
-      if (!fileSnap.val()) return Promise.reject({message: 'File data does not exist.'})
-      // Load file from firepad original content if no history available
-      if (fileSnap.hasChild('original') && !fileSnap.hasChild('history')) {
-        // File has not yet been opened in firepad
-        this.content = fileSnap.child('original').val()
-        return this.content
-      }
-      return Promise.reject({ message: 'no orignal content or has existing history' })
-    })
-  }
+  return Object.assign(
+    {},
+    entity(projectPath, filePath, 'file'),
+    methods
+  )
 }
 
-function modeFromFileExtension (mode) {
+/* istanbul ignore next */
+export function modeFromFileExtension (mode) {
   switch (mode) {
     case 'js':
     case 'json':
