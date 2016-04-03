@@ -3,7 +3,7 @@ import cookie from 'cookie'
 import config from '../config'
 import { get, put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
-import { OAuth } from 'oauthio-web' // window/document undefined error
+const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document undefined error
 
 let token
 let currentUser
