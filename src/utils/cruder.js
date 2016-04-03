@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { createHeaders } from '../auth'
+import { typeReducer } from './index'
 
 const handleResponse = body => {
   if (body.code >= 400) {
@@ -62,11 +63,5 @@ export default (url, types) => {
     add
   }
 
-  return types
-    .reduce((returnedMethods, type) => {
-      let method = {}
-      if (typeof methods[type] === 'undefined') throw Error(`${type} is not a valid method of cruder`)
-      method[type] = methods[type].call(this, url)
-      return Object.assign({}, returnedMethods, method)
-    }, {})
+  return typeReducer(url, types, methods, 'cruder')
 }

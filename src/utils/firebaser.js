@@ -1,5 +1,6 @@
 import config from '../config'
 import Firebase from 'firebase'
+import { typeReducer } from './index'
 
 export const createFirebaseUrl = relativePath => _ =>
   [config.firebaseRoot]
@@ -53,12 +54,5 @@ export default (url, types) => {
     createFirebaseUrl,
     createFirebaseRef
   }
-
-  return types
-    .reduce((returnedMethods, type) => {
-      let method = {}
-      if (typeof methods[type] === 'undefined') throw Error(`${type} is not a valid method of firebaser`)
-      method[type] = methods[type].call(this, url)
-      return Object.assign({}, returnedMethods, method)
-    }, {})
+  return typeReducer(url, types, methods, 'firebaser')
 }
