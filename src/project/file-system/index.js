@@ -1,13 +1,19 @@
-import firebaser, { createFirebaseUrl, createFirebaseRef } from '../../utils/firebaser'
+import firebaser, { createFirebaseUrl, createFirebaseRef, get, set } from '../../utils/firebaser'
 import file from './file'
 import entity from './entity'
 import folder from './folder'
 
 export default (owner, projectname) => {
-  const relativePath = ['files', owner, projectname]
+  const rootPath = ['files']
+  const relativePath = rootPath.concat([owner, projectname])
 
   const methods = {
-
+    clone: (newOwner, newName) =>
+      get(relativePath)()
+        .then(files =>
+          set(rootPath.concat([newOwner, newName]))(files)
+            .then(() => files)
+        )
   }
 
   const subModels = {

@@ -13,7 +13,9 @@ export default (owner, projectname) => {
     addCollaborators: collaborators =>
       update(`${url}/collaborators`)(collaborators),
     removeCollaborator: username =>
-      remove(`${url}/collaborators/${username}`)()
+      remove(`${url}/collaborators/${username}`)(),
+    clone: (newOwner, newName) =>
+      fileSystem(owner, projectname).clone(newOwner, newName)
   }
 
   const subModels = {

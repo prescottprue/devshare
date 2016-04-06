@@ -12,17 +12,21 @@ export const createFirebaseUrl = relativePath => _ =>
     )
     .join('/')
 
-export const createFirebaseRef = relativePath => _ =>
-  new Firebase(createFirebaseUrl(relativePath)())
+export const createFirebaseRef = relativePath => _ => {
+  const url = createFirebaseUrl(relativePath)()
+  console.log('url:', url)
+  return new Firebase(url)
+}
 
 export const get = relativePath => _ =>
   createFirebaseRef(relativePath)()
     .once('value')
-    .then(data => Object.assign(data.val(), data))
+    .then(data => data.val())
 
 export const set = relativePath => object =>
   createFirebaseRef(relativePath)()
     .set(object)
+    .then(data => data ? data.val() : object)
 
 export const update = relativePath => object =>
   createFirebaseRef(relativePath)()
