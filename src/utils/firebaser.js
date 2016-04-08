@@ -12,11 +12,8 @@ export const createFirebaseUrl = relativePath => _ =>
     )
     .join('/')
 
-export const createFirebaseRef = relativePath => _ => {
-  const url = createFirebaseUrl(relativePath)()
-  console.log('url:', url)
-  return new Firebase(url)
-}
+export const createFirebaseRef = relativePath => _ =>
+  new Firebase(createFirebaseUrl(relativePath)())
 
 export const get = relativePath => _ =>
   createFirebaseRef(relativePath)()
@@ -46,6 +43,14 @@ export const getChild = relativePath => child =>
     .child(child)
     .once('value')
     .then(data => data.val())
+
+export const auth = token =>
+  createFirebaseRef([])()
+    .authWithCustomToken(token)
+
+export const unauth = () =>
+  createFirebaseRef([])()
+    .unauth()
 
 export default (url, types) => {
   let methods = {

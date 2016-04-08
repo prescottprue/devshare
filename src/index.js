@@ -16,7 +16,9 @@ export default Object.assign(
   devshare,
   _auth
 )
+
 export const project = _project
 export const user = _user
 export const users = _users
 export const auth = _auth
+export const { authWithProvider, login, logout, signup } = _auth

@@ -152,9 +152,4 @@ describe('Auth', () => {
       expect(currentUser).to.be.an('object')
     })
   })
-  describe('currentUser', () => {
-    it('gets user', () => {
-      expect(auth.currentUser).to.be.an('object')
-    })
-  })
 })
