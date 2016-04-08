@@ -1,7 +1,18 @@
+import { randomIntBetween } from '../../utils'
 import firebaser, { createFirebaseUrl, createFirebaseRef, get, set } from '../../utils/firebaser'
 import file from './file'
 import entity from './entity'
 import folder from './folder'
+
+const highlightColors = [
+  '#FF0000',
+  '#FF00F1',
+  '#F1C40F',
+  '#D35400',
+  '#FF08',
+  '#2980B9',
+  '#9B59B6'
+]
 
 export default (owner, projectname) => {
   const rootPath = ['files']
@@ -13,7 +24,10 @@ export default (owner, projectname) => {
         .then(files =>
           set(rootPath.concat([newOwner, newName]))(files)
             .then(() => files)
-        )
+        ),
+    // TODO: Check other existing colors before returning
+    getUserColor: () =>
+      highlightColors[randomIntBetween(0, highlightColors.length - 1)]
   }
 
   const subModels = {
