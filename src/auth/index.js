@@ -1,8 +1,13 @@
 import { isObject } from 'lodash'
 import cookie from 'cookie'
 import config from '../config'
+import {
+  auth as authWithFirebase,
+  unauth as unauthFromFirebase
+} from '../utils/firebaser'
 import { get, put, post } from '../utils/cruder'
 import { isBrowser } from '../utils/env'
+
 const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document undefined error
 
 let token
@@ -54,10 +59,12 @@ export const login = (username, password) => {
   if (isObject(username) && username.provider) return authWithProvider(username)
   return put(`${config.tessellateRoot}/login`)({ username, password })
     .then(response => {
-      const { token, user } = response
+      const { token, user, firebaseToken } = response
       if (token) setToken(token)
       if (user) setCurrentUser(user)
-      return response
+      if (!firebaseToken) return response
+      return authWithFirebase(firebaseToken)
+        .then(firebaseData => response)
     })
 }
 
@@ -66,6 +73,7 @@ export const logout = _ =>
     .then(response => {
       removeToken()
       removeCurrentUser()
+      unauthFromFirebase()
       return response
     })
 
@@ -103,20 +111,16 @@ export const authWithProvider = provider =>
           code: result.code,
           stateToken: params.token
         }).then(response => {
-          const { token, user } = response
+          const { token, user, firebaseToken } = response
           if (token) setToken(token)
           if (user) setCurrentUser(user)
+          if (firebaseToken) authWithFirebase(firebaseToken)
           return response
         })
       )
     }).catch(error => Promise.reject(error))
 
 export default {
-  get currentUser () {
-    if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
-    /* istanbul ignore next  */
-    return JSON.parse(currentUser || null)
-  },
   getCurrentUser,
   authWithProvider,
   login,

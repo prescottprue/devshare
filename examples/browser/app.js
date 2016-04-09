@@ -8,7 +8,12 @@ setStatus()
 function login () {
   var username = document.getElementById('login-username').value
   var password = document.getElementById('login-password').value
-  return devshare.login(username, password).then(res => setStatus())
+  return devshare.login(username, password)
+    .then(res => setStatus())
+}
+function logout () {
+  return devshare.logout()
+    .then(res => setStatus())
 }
 
 function signup () {
@@ -16,13 +21,15 @@ function signup () {
   var password = document.getElementById('signup-password').value
   var name = document.getElementById('signup-name').value
   var email = document.getElementById('signup-email').value
-  return devshare.signup({
-    username: username,
-    email: email,
-    password: password,
-    name: name
-  })
-    .then(res => setStatus())
+  return devshare.signup(
+    {
+      username: username,
+      email: email,
+      password: password,
+      name: name
+    }
+  )
+  .then(res => setStatus())
 }
 
 function authWithProvider (provider) {
@@ -31,7 +38,9 @@ function authWithProvider (provider) {
 }
 
 function getUser (username) {
-  return devshare.user(username).get().then(res => console.log('user loaded:', res))
+  return devshare.user(username)
+    .get()
+    .then(res => console.log('user loaded:', res))
 }
 
 function currentUser () {
@@ -39,11 +48,15 @@ function currentUser () {
 }
 
 function getProject () {
-  devshare.project('scott', 'angularExample').get().then(res => console.log('project:', res))
+  devshare.project('scott', 'angularExample')
+    .get()
+    .then(res => console.log('project:', res))
 }
 
 function addProject () {
-  devshare.project('scott', 'angularExample').add().then(res => console.log('project:', res))
+  devshare.project('scott', 'angularExample')
+    .add()
+    .then(res => console.log('project:', res))
 }
 
 // Set status styles
@@ -51,7 +64,7 @@ function setStatus () {
   var statusEl = document.getElementById('status')
   var logoutButton = document.getElementById('logout-btn')
 
-  if (devshare.currentUser) {
+  if (devshare.getCurrentUser()) {
     statusEl.innerHTML = 'True'
     statusEl.style.color = 'green'
     // statusEl.className = statusEl.className ? ' status-loggedIn' : 'status-loggedIn'

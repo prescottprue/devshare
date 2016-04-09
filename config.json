@@ -8,6 +8,6 @@
   },
   "cdn": {
     "bucket": "kyper-cdn",
-    "prefix": "devshare"
+    "prefix": "js/devshare"
   }
 }

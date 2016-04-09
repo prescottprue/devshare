@@ -16,6 +16,12 @@ export const typeReducer = (url, types, methods, name) =>
       method[type] = methods[type].call(this, url)
       return Object.assign({}, returnedMethods, method)
     }, {})
+/*
+ * Returns a random integer between min (inclusive) and max (inclusive)
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+export const randomIntBetween = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
 
 export default Object.assign(
   {},
