@@ -21,7 +21,7 @@ export const typeReducer = (url, types, methods, name) =>
  * Using Math.round() will give you a non-uniform distribution!
  */
 export const randomIntBetween = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+  Math.floor(Math.random() * (max - min + 1)) + min
 
 export default Object.assign(
   {},
