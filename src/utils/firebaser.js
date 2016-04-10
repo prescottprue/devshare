@@ -1,16 +1,20 @@
 import config from '../config'
 import Firebase from 'firebase'
 import { typeReducer } from './index'
+import { isArray } from 'lodash'
 
-export const createFirebaseUrl = relativePath => _ =>
-  [config.firebaseRoot]
+export const createFirebaseUrl = relativePath => _ => {
+  if (!isArray(relativePath)) relativePath = [relativePath]
+  return [config.firebaseRoot]
     .concat(
-      relativePath.map(loc =>
-        loc.replace(/[.]/g, ':')
+      relativePath.map(loc => loc
+        ? loc.replace(/[.]/g, ':')
         .replace(/[#$\[\]]/g, '_-_')
+        : ''
       )
     )
     .join('/')
+}
 
 export const createFirebaseRef = relativePath => _ =>
   new Firebase(createFirebaseUrl(relativePath)())
@@ -35,8 +39,9 @@ export const remove = relativePath => _ =>
     .remove()
     .then(data => null)
 
-export const sync = ref => callback =>
-  ref.on('value', data => callback(data.val()))
+export const sync = relativePath => callback =>
+  createFirebaseRef(relativePath)()
+    .on('value', data => callback(data.val()))
 
 export const getChild = relativePath => child =>
   createFirebaseRef(relativePath)()

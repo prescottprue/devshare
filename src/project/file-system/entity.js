@@ -15,17 +15,28 @@ export default (projectPath, entityPath, entityType) => {
   const methods = {
     firebaseUrl: () =>
       createFirebaseUrl(fullPath)(),
+
     firebaseRef: () =>
       createFirebaseRef(fullPath)(),
-    add: () =>
-      set(fullPath)({ meta: { name, path, entityType } }),
+
+    add: original =>
+      original
+      ? set(fullPath)({ meta: { name, path, entityType, original } })
+      : set(fullPath)({ meta: { name, path, entityType } }),
+
     getMeta: () =>
       get(fullPath)()
-      .then(entity => entity.meta),
+        .then(entity =>
+          entity.meta
+        ),
+
     move: newPath =>
       get(fullPath)()
-        .then(originalEntity => set(pathArray.concat(newPath))(originalEntity))
+        .then(originalEntity =>
+          set(pathArray.concat(newPath))(originalEntity)
+        )
         .then(remove(fullPath)()),
+
     // TODO: Set in new location instead of just changing name
     rename: newName =>
       update(fullPath)({ name: newName })
@@ -36,7 +47,7 @@ export default (projectPath, entityPath, entityType) => {
     { entityType, name, path, pathArray },
     firebaser(
       fullPath,
-      ['get', 'set', 'update', 'remove', 'getChild']
+      ['get', 'update', 'remove', 'getChild']
     ),
     methods
   )

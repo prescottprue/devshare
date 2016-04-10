@@ -4,7 +4,7 @@ import file from './file'
 import entity from './entity'
 import folder from './folder'
 import { each } from 'lodash'
-import jszip from 'jszip'
+import Jszip from 'jszip'
 import filesave from 'node-safe-filesaver'
 
 const highlightColors = [
@@ -18,7 +18,7 @@ const highlightColors = [
 ]
 
 export const createZip = (directory) => {
-  let zip = new jszip()
+  let zip = new Jszip()
   let promiseArray = []
   let handleZip = fbChildren => {
     each(fbChildren, child => {
@@ -42,25 +42,30 @@ export default (owner, projectname) => {
   const relativePath = rootPath.concat([owner, projectname])
 
   const methods = {
+    addFile: (filePath, content) =>
+      file(relativePath, filePath).add(content),
+
+    addFolder: folderPath =>
+      folder(relativePath, folderPath).add(),
+
     clone: (newOwner, newName) =>
       get(relativePath)()
         .then(files =>
           set(rootPath.concat([newOwner, newName || projectname]))(files)
             .then(() => files)
         ),
+
     download: () =>
       get(relativePath)()
         .then(createZip)
         .then(content =>
           filesave.saveAs(content, `${projectname}-devShare-export.zip`)
         ),
+
     // TODO: Check other existing colors before returning
     getUserColor: () =>
-      highlightColors[randomIntBetween(0, highlightColors.length - 1)],
-    addFile: filePath =>
-      file(relativePath, filePath).add(),
-    addFolder: folderPath =>
-      folder(relativePath, folderPath).add()
+      highlightColors[randomIntBetween(0, highlightColors.length - 1)]
+
   }
 
   const subModels = {
