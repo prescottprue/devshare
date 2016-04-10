@@ -18,13 +18,13 @@ export default (projectPath, entityPath, entityType) => {
     firebaseRef: () =>
       createFirebaseRef(fullPath)(),
     add: () =>
-      set(fullPath)({ meta: { name, path } }),
+      set(fullPath)({ meta: { name, path, entityType } }),
     getMeta: () =>
       get(fullPath)()
       .then(entity => entity.meta),
     move: newPath =>
       get(fullPath)()
-        .then(originalEntity => set(newPath)(originalEntity))
+        .then(originalEntity => set(pathArray.concat(newPath))(originalEntity))
         .then(remove(fullPath)()),
     // TODO: Set in new location instead of just changing name
     rename: newName =>
