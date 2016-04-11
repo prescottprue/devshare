@@ -4,8 +4,6 @@ import file from './file'
 import entity from './entity'
 import folder from './folder'
 import { each } from 'lodash'
-import Jszip from 'jszip'
-import filesave from 'node-safe-filesaver'
 
 const highlightColors = [
   '#FF0000',
@@ -17,29 +15,30 @@ const highlightColors = [
   '#9B59B6'
 ]
 
-export const createZip = (directory) => {
-  let zip = new Jszip()
-  let promiseArray = []
-  let handleZip = fbChildren => {
-    each(fbChildren, child => {
-      if (!child.meta || child.meta.entityType === 'folder') {
-        delete child.meta
-        return handleZip(child)
-      }
-      let promise = this.File(child.meta.path).getContent().then((content) => {
-        return zip.file(child.meta.path, content)
-      })
-      promiseArray.push(promise)
-    })
-  }
-  handleZip(directory)
-  return Promise.all(promiseArray)
-    .then(() => zip.generate({ type: 'blob' }))
-}
-
 export default (owner, projectname) => {
   const rootPath = ['files']
   const relativePath = rootPath.concat([owner, projectname])
+
+  const createZip = directory => {
+    let zip = new Jszip()
+    console.log('create zip called', directory)
+    let promiseArray = []
+    let handleZip = fbChildren => {
+      each(fbChildren, child => {
+        if (!child.meta || child.meta.entityType === 'folder') {
+          delete child.meta
+          return handleZip(child)
+        }
+        let promise = file(relativePath, child.meta.path)
+          .getContent()
+          .then(content => zip.file(child.meta.path, content))
+        promiseArray.push(promise)
+      })
+    }
+    handleZip(directory)
+    return Promise.all(promiseArray)
+      .then(() => zip.generate({ type: 'blob' }))
+  }
 
   const methods = {
     addFile: (filePath, content) =>
@@ -57,7 +56,10 @@ export default (owner, projectname) => {
 
     download: () =>
       get(relativePath)()
-        .then(createZip)
+        .then(content => {
+          console.log('files content loaded for download:', content)
+          return createZip(content)
+        })
         .then(content =>
           filesave.saveAs(content, `${projectname}-devShare-export.zip`)
         ),

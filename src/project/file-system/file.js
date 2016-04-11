@@ -9,7 +9,9 @@ export default (projectPath, filePath) => {
   const path = pathArray.join('/')
   const fullPath = projectPath.concat(pathArray)
   const name = pathArray[pathArray.length - 1]
-  const fullUrl = [tessellateRoot].concat([projectPath[1], projectPath[2], projectPath[0]])
+  const projectUrl = [tessellateRoot].concat([projectPath[1], projectPath[2], projectPath[0]]).join('/')
+  console.log('full url:', projectUrl)
+
   const methods = {
     /**
      * @description File's extension
@@ -43,7 +45,8 @@ export default (projectPath, filePath) => {
             return this.content
           }
           // Use endpoint to get file content (Headless Firepad)
-          return get(fullUrl)({ path })
+          console.log('calling endpoint:', { projectUrl, path })
+          return get(projectUrl)({ path })
         })
   }
 
