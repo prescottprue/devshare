@@ -1,21 +1,32 @@
 import config from '../config'
 import cruder, { update, remove } from '../utils/cruder'
 import fileSystem from './file-system'
+import { isObject } from 'lodash'
 
 export default (owner, projectname) => {
+  // Handle object as first param
+  if (isObject(owner) && owner.owner) {
+    projectname = owner.name
+    owner = owner.owner.username
+  }
   const url = `${config.tessellateRoot}/projects/${owner}/${projectname}`
 
   const methods = {
     rename: newProjectname =>
       update(url)({ name: newProjectname }),
+
     addCollaborator: username =>
       update(`${url}/collaborators/${username}`)(),
+
     addCollaborators: collaborators =>
       update(`${url}/collaborators`)(collaborators),
+
     removeCollaborator: username =>
       remove(`${url}/collaborators/${username}`)(),
+
     clone: (newOwner, newName) =>
       fileSystem(owner, projectname).clone(newOwner, newName)
+
   }
 
   const subModels = {
