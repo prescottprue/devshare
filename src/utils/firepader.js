@@ -1,26 +1,30 @@
+import { isBrowser } from './env'
 
-// import Firepad from 'firepad'
+export const firepadExists = () => (isBrowser() && window.Firepad)
 
-var Firepad = (window && window.Firepad) ? window.Firepad : null
-// Handle server side requiring of firepad (depends on firepad being in webpack's noParse)
-// Firepad = !window ? require('firepad') : Firepad
+export const getFirepad = () => {
+  if (firepadExists) return window.Firepad
+  // require firepad in node environment (depends on firepad being in webpack's noParse)
+  if (!isBrowser()) return require('firepad')
+  return null
+}
 
 export const getTextFromRef = ref => {
   // TODO: Load content from getContent endpoint
-  if (!Firepad) {
-    console.error('Loading content is not supported without Firepad')
-    return Promise.reject({ message: 'Loading content is not supported without Firepad' })
+  if (!firepadExists()) {
+    console.error('Loading content is not yet supported without Firepad')
+    return Promise.reject({ message: 'Loading content is not yet supported without Firepad' })
   }
+  const Firepad = getFirepad()
   return new Promise(resolve =>
     Firepad
       .Headless(ref)
-      .getText(text => {
-        console.log('text loaded', text)
-        resolve(text)
-      })
+      .getText(text => resolve(text))
   )
 }
 
 export default {
+  firepadExists,
+  getFirepad,
   getTextFromRef
 }

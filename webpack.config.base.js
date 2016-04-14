@@ -8,8 +8,8 @@ module.exports = {
     loaders: [
       { test: /\.js$/, loaders: [ 'babel' ], exclude: [ /node_modules/ ] },
       { test: /\.json$/, loaders: [ 'json' ], exclude: [] }
-    ]
-    // noParse: [ /firepad/ ]
+    ],
+    noParse: [ /node_modules\/firepad/ ]
   },
   plugins: [
     new webpack.BannerPlugin(`${config.library.file}.js v${pkg.version} | (c) Kyper Digital Inc.`, { raw: false, entryOnly: true })
