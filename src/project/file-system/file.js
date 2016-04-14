@@ -1,8 +1,9 @@
 import { tessellateRoot } from '../../config'
 import entity from './entity'
 import { set, createFirebaseRef } from '../../utils/firebaser'
-import { get } from '../../utils/cruder'
+// import { get } from '../../utils/cruder'
 import { isArray } from 'lodash'
+import { getTextFromRef } from '../../utils/firepader'
 
 export default (projectPath, filePath) => {
   const pathArray = isArray(filePath) ? filePath : filePath.split('/')
@@ -44,9 +45,10 @@ export default (projectPath, filePath) => {
             this.content = entitySnap.child('original').val() /* istanbul ignore next */
             return this.content
           }
-          // Use endpoint to get file content (Headless Firepad)
-          console.log('calling endpoint:', { projectUrl, path })
-          return get(projectUrl)({ path })
+          return getTextFromRef(entitySnap.ref()).then(res => {
+            console.log('text loaded from ref:', res)
+            return res
+          })
         })
   }
 

@@ -1,10 +1,15 @@
 import { randomIntBetween } from '../../utils'
+import { getFile as serverGet } from '../../utils/cruder'
 import firebaser, { createFirebaseUrl, createFirebaseRef, get, set } from '../../utils/firebaser'
 import file from './file'
 import entity from './entity'
 import folder from './folder'
 import { each } from 'lodash'
+import { Firepad } from '../../utils/firepader'
+import { tessellateRoot } from '../../config'
+import Jszip from 'jszip'
 
+console.log('firepad loaded into file-system:', Firepad)
 const highlightColors = [
   '#FF0000',
   '#FF00F1',
@@ -18,10 +23,12 @@ const highlightColors = [
 export default (owner, projectname) => {
   const rootPath = ['files']
   const relativePath = rootPath.concat([owner, projectname])
+  const projectUrl = `${tessellateRoot}/projects/${owner}/${projectname}`
+  console.log('project url', projectUrl)
 
   const createZip = directory => {
+    // Get zip from server if Firepad does not exist
     let zip = new Jszip()
-    console.log('create zip called', directory)
     let promiseArray = []
     let handleZip = fbChildren => {
       each(fbChildren, child => {
@@ -31,13 +38,26 @@ export default (owner, projectname) => {
         }
         let promise = file(relativePath, child.meta.path)
           .getContent()
-          .then(content => zip.file(child.meta.path, content))
+          .then(content => {
+            console.log('--------------- content loaded, being added to zip')
+            zip.file(child.meta.path, content)
+          })
         promiseArray.push(promise)
       })
     }
     handleZip(directory)
     return Promise.all(promiseArray)
-      .then(() => zip.generate({ type: 'blob' }))
+      .then(() => {
+        console.log('zipping together')
+        try {
+          let content = zip.generate({ type: 'blob' })
+          let zipFile = filesave.saveAs(content, `${projectname}-devShare-export.zip`)
+          console.log('zip file created', zipFile)
+        } catch (err) {
+          console.error('error:', err)
+          return Promise.reject(err)
+        }
+      })
   }
 
   const methods = {
@@ -54,15 +74,13 @@ export default (owner, projectname) => {
             .then(() => files)
         ),
 
-    download: () =>
-      get(relativePath)()
+    download: () => Firepad
+      ? get(relativePath)()
         .then(content => {
           console.log('files content loaded for download:', content)
           return createZip(content)
         })
-        .then(content =>
-          filesave.saveAs(content, `${projectname}-devShare-export.zip`)
-        ),
+      : serverGet(`${projectUrl}/zip`)(),
 
     // TODO: Check other existing colors before returning
     getUserColor: () =>

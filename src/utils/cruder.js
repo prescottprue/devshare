@@ -15,6 +15,10 @@ export const get = url => _ =>
     .then(response => response.json())
     .then(body => handleResponse(body))
 
+export const getFile = url => _ =>
+  fetch(url, { headers: createHeaders() })
+    .then(body => handleResponse(body))
+
 export const remove = url => _ =>
   fetch(url, {
     method: 'delete',
