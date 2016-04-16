@@ -1,19 +1,21 @@
 /* global describe it expect */
 import file, { modeFromFileExtension } from '../../src/project/file-system/file'
+const testUser = 'tester'
+const testProject = 'test'
 describe('File', () => {
   describe('constructor', () => {
     it('handles string path', () =>
-      file(['mel', 'jazztoes'], 'index.js')
+      file([testUser, testProject], 'index.js')
         .getContent().should.exist
     )
     it('handles array path', () =>
-      file(['mel', 'jazztoes'], ['index.js'])
+      file([testUser, testProject], ['index.js'])
         .getContent().should.exist
     )
   })
   describe('getContent()', () => {
     it('reject for non existant file', () =>
-      file(['mel', 'jazztoes'], 'index.js')
+      file([testUser, testProject], 'index.js')
         .getContent().should.eventually.be.rejected
     )
     it('loads content from upload', () =>
@@ -23,20 +25,20 @@ describe('File', () => {
   })
   describe('setContent()', () => {
     it('handles js', () =>
-      file(['mel', 'jazztoes'], 'index.js')
+      file([testUser, testProject], 'index.js')
         .setContent('asdfasdf').should.eventually.be.fullfilled
     )
   })
   describe('syntaxMode()', () => {
     it('handles js', () =>
       expect(
-        file(['mel', 'jazztoes'], 'index.js')
+        file([testUser, testProject], 'index.js')
           .syntaxMode
       ).to.equal('javascript')
     )
     it('handles html', () =>
       expect(
-        file(['mel', 'jazztoes'], 'index.html')
+        file([testUser, testProject], 'index.html')
           .syntaxMode
       ).to.equal('htmlmixed')
     )

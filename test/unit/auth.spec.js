@@ -13,7 +13,7 @@ describe('Auth', () => {
   describe('login', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .put(`/login`, { username, password })
+        .put('/login', { username, password })
         .reply(200, {
           user: {
             username, email, name
@@ -38,14 +38,14 @@ describe('Auth', () => {
       auth
         .login(username, password)
         .should.be.fulfilled
-        .then(_ => cookie.parse(document.cookie).should.have.property('token', token))
+        .then(() => cookie.parse(document.cookie).should.have.property('token', token))
     )
 
     it('saves the current user', () =>
       auth
         .login(username, password)
         .should.be.fulfilled
-        .then(_ => JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username))
+        .then(() => JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username))
     )
 
     it('accepts an object', () =>

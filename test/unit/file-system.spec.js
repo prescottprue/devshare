@@ -1,63 +1,49 @@
-/* global describe it beforeEach afterEach */
+/* global describe it beforeEach */
 import fileSystem from '../../src/project/file-system'
-
+const testUser = 'tester'
+const testProject = 'test'
 describe('File System', () => {
-  beforeEach(() => {
-
-  })
-
-  afterEach(() => {
-
-  })
-
   describe('get()', () => {
+    beforeEach(() =>
+      fileSystem(testUser, testProject)
+      .addFile('src/index.html', 'some file content')
+    )
     it('gets project', () =>
-      fileSystem('mel', 'jazztoes')
+      fileSystem(testUser, testProject)
         .get().should.eventually.have.property('src')
     )
   })
-  describe('file()', () => {
-    describe('get()', () => {
-      it('gets file', () =>
-        fileSystem('mel', 'jazztoes')
-          .file('src/main.js')
-          .get().should.eventually.be.an('object')
-      )
-    })
-    describe('add()', () => {
-      it('adds file', () =>
-        fileSystem('mel', 'jazztoes')
-          .file('index.html')
-          .add().should.be.fulfilled
-      )
-    })
-    describe('getMeta()', () => {
-      it('gets file meta', () =>
-        fileSystem('mel', 'jazztoes')
-          .file('src/main.js')
-          .getMeta().should.eventually.be.an('object')
-      )
-    })
-    describe.skip('rename', () => {
-      it('renames file', () =>
-        fileSystem('mel', 'jazztoes')
-          .file('index.html')
-          .rename('index2.html').should.eventually.be.an('object')
-      )
-    })
-    describe.skip('move', () => {
-      it('moves file', () =>
-        fileSystem('mel', 'jazztoes')
-          .file('index.html')
-          .move('src').should.eventually.be.an('object')
-      )
-    })
-    describe('remove', () => {
-      it('removes file', () =>
-        fileSystem('mel', 'jazztoes')
-          .file('index.html')
-          .remove().should.eventually.be.null
-      )
-    })
+
+  describe('clone', () => {
+    it('exists', () =>
+      fileSystem(testUser, testProject).should.respondTo('clone')
+    )
+    it.skip('clones one project into another', () =>
+      fileSystem(testUser, testProject)
+        .clone('test2', 'test').should.be.fullfilled
+    )
+  })
+
+  describe('zip', () => {
+    it('exists', () =>
+      fileSystem(testUser, testProject).should.respondTo('zip')
+    )
+    it('has an alias "download"', () =>
+      fileSystem(testUser, testProject).should.respondTo('download')
+    )
+    it.skip('downloads a zip file', () =>
+      fileSystem(testUser, testProject)
+        .zip().should.be.fullfilled
+    )
+  })
+
+  describe('getUserColor', () => {
+    it('exists', () =>
+      fileSystem(testUser, testProject).should.respondTo('getUserColor')
+    )
+    it('returns a valid hex value', () =>
+      fileSystem(testUser, testProject)
+        .getUserColor().should.be.a.string
+    )
   })
 })

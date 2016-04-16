@@ -32,7 +32,7 @@ export default (projectPath, filePath) => {
      * @return {String}
      */
     //  TODO: Set content using firepad if available, or fall back to server endpoint
-    setContent: original =>
+    setContent: (original) =>
       set(fullPath)({ meta: { path, name }, original }),
 
     /**
@@ -42,7 +42,7 @@ export default (projectPath, filePath) => {
     getContent: () =>
       createFirebaseRef(fullPath)()
         .once('value')
-        .then(snap => {
+        .then((snap) => {
           if (!snap || !snap.val()) return Promise.reject({ message: 'Entity does not exist.' })
           // Load file from original content if no firepad history available
           if (snap.hasChild('original') && !snap.hasChild('history')) {

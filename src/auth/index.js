@@ -23,12 +23,12 @@ export const createHeaders = _ => {
   return header
 }
 
-const setToken = nextToken => {
+const setToken = (nextToken) => {
   if (isBrowser()) document.cookie = cookie.serialize('token', nextToken)
   token = nextToken
 }
 
-const removeToken = _ => {
+const removeToken = (_) => {
   /* istanbul ignore else  */
   if (isBrowser()) document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   token = null
