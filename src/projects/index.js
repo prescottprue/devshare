@@ -9,16 +9,17 @@ export default (username) => {
   const methods = {
     search: query =>
       search(url)('name', query),
+
     add: project => {
-      const { name } = project
-      if (!name) return Promise.reject({ message: 'name is required' })
-      if (name.match(/[^A-Za-z0-9\-_!,() ]/)) {
+      if (!project.name) return Promise.reject({ message: 'name is required' })
+      if (project.name.match(/[^A-Za-z0-9\-_!,() ]/)) {
         return Promise.reject({
           message: 'name may not contain symbols other than: _ ! , ( )'
         })
       }
       return add(url)(project)
     }
+
   }
 
   return Object.assign(
