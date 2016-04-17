@@ -3,11 +3,11 @@ import Firebase from 'firebase'
 import { typeReducer } from './index'
 import { isArray } from 'lodash'
 
-export const createFirebaseUrl = relativePath => _ => {
+export const createFirebaseUrl = (relativePath) => () => {
   if (!isArray(relativePath)) relativePath = [relativePath]
   return [config.firebaseRoot]
     .concat(
-      relativePath.map(loc => loc
+      relativePath.map((loc) => loc
         ? loc.replace(/[.]/g, ':')
         .replace(/[#$\[\]]/g, '_-_')
         : ''
@@ -16,40 +16,40 @@ export const createFirebaseUrl = relativePath => _ => {
     .join('/')
 }
 
-export const createFirebaseRef = relativePath => _ =>
+export const createFirebaseRef = (relativePath) => () =>
   new Firebase(createFirebaseUrl(relativePath)())
 
-export const get = relativePath => _ =>
+export const get = (relativePath) => () =>
   createFirebaseRef(relativePath)()
     .once('value')
-    .then(data => data.val())
+    .then((data) => data.val())
 
-export const set = relativePath => object =>
+export const set = (relativePath) => (object) =>
   createFirebaseRef(relativePath)()
     .set(object)
-    .then(data => data ? data.val() : object)
+    .then((data) => data ? data.val() : object)
 
-export const update = relativePath => object =>
+export const update = (relativePath) => (object) =>
   createFirebaseRef(relativePath)()
     .update(object)
-    .then(data => data.val())
+    .then((data) => data.val())
 
-export const remove = relativePath => _ =>
+export const remove = (relativePath) => () =>
   createFirebaseRef(relativePath)()
     .remove()
-    .then(data => null)
+    .then((data) => null)
 
-export const sync = relativePath => callback =>
+export const sync = (relativePath) => (callback) =>
   createFirebaseRef(relativePath)()
-    .on('value', data => callback(data.val()))
+    .on('value', (data) => callback(data.val()))
 
-export const getChild = relativePath => child =>
+export const getChild = (relativePath) => (child) =>
   createFirebaseRef(relativePath)()
     .child(child)
     .once('value')
-    .then(data => data.val())
+    .then((data) => data.val())
 
-export const auth = token =>
+export const auth = (token) =>
   createFirebaseRef([])()
     .authWithCustomToken(token)
 

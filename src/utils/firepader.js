@@ -1,4 +1,5 @@
-import { isBrowser } from './env'
+export const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined'
+
 /*
  * Check to see if Firepad exists
  */

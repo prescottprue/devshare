@@ -6,7 +6,7 @@ import {
   unauth as unauthFromFirebase
 } from '../utils/firebaser'
 import { get, put, post } from '../utils/cruder'
-import { isBrowser } from '../utils/env'
+import { isBrowser } from '../utils'
 
 const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document undefined error
 

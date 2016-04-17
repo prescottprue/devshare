@@ -4,4 +4,6 @@ repl.js
 *.log
 lib
 dist
-_book
+**/node_modules
+
+_book/
