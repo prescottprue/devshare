@@ -12,20 +12,23 @@ export default (owner, projectname) => {
   const url = `${config.tessellateRoot}/projects/${owner}/${projectname}`
 
   const methods = {
-    rename: newProjectname =>
+    rename: (newProjectname) =>
       update(url)({ name: newProjectname }),
 
-    addCollaborator: username =>
+    addCollaborator: (username) =>
       update(`${url}/collaborators/${username}`)(),
 
-    addCollaborators: collaborators =>
+    addCollaborators: (collaborators) =>
       update(`${url}/collaborators`)(collaborators),
 
-    removeCollaborator: username =>
+    removeCollaborator: (username) =>
       remove(`${url}/collaborators/${username}`)(),
 
     clone: (newOwner, newName) =>
-      fileSystem(owner, projectname).clone(newOwner, newName)
+      fileSystem(owner, projectname).clone(newOwner, newName),
+
+    download: () =>
+      fileSystem(owner, projectname).download()
 
   }
 

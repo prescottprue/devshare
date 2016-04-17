@@ -13,7 +13,7 @@ const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document
 let token
 let currentUser
 
-export const createHeaders = _ => {
+export const createHeaders = () => {
   let header = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
@@ -28,24 +28,24 @@ const setToken = (nextToken) => {
   token = nextToken
 }
 
-const removeToken = (_) => {
+const removeToken = () => {
   /* istanbul ignore else  */
   if (isBrowser()) document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   token = null
 }
 
-export const getCurrentUser = _ => {
+export const getCurrentUser = () => {
   if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
   /* istanbul ignore next  */
   return JSON.parse(currentUser)
 }
 
-const setCurrentUser = nextCurrentUser => {
+const setCurrentUser = (nextCurrentUser) => {
   if (isBrowser()) window.sessionStorage.setItem('currentUser', JSON.stringify(nextCurrentUser))
   currentUser = nextCurrentUser
 }
 
-const removeCurrentUser = _ => {
+const removeCurrentUser = () => {
   if (isBrowser()) window.sessionStorage.removeItem('currentUser')
   currentUser = null
 }
@@ -58,28 +58,28 @@ export const login = (username, password) => {
   }
   if (isObject(username) && username.provider) return authWithProvider(username)
   return put(`${config.tessellateRoot}/login`)({ username, password })
-    .then(response => {
+    .then((response) => {
       const { token, user, firebaseToken } = response
       if (token) setToken(token)
       if (user) setCurrentUser(user)
       if (!firebaseToken) return response
       return authWithFirebase(firebaseToken)
-        .then(firebaseData => response)
+        .then((firebaseData) => response)
     })
 }
 
-export const logout = _ =>
+export const logout = () =>
   put(`${config.tessellateRoot}/logout`)()
-    .then(response => {
+    .then((response) => {
       removeToken()
       removeCurrentUser()
       unauthFromFirebase()
       return response
     })
 
-export const signup = userInfo =>
+export const signup = (userInfo) =>
   post(`${config.tessellateRoot}/signup`)(userInfo)
-    .then(response => {
+    .then((response) => {
       const { token, user } = response
       if (token) setToken(token)
       if (user) setCurrentUser(user)
@@ -92,25 +92,26 @@ export const signup = userInfo =>
 const handleOAuthPopup = (provider, params) =>
   OAuth
   .popup(provider, { state: params.token })
-  .done(result => Promise.resolve(result))
-  .fail(error => Promise.reject(error))
+  .done((result) => Promise.resolve(result))
+  .fail((error) => Promise.reject(error))
 
 /**
-* @description Authenticate using a token generated from the server (so server and client are both aware of auth state)
-*/
-export const authWithProvider = provider =>
+ * @description Authenticate using a token generated from the server (so
+ * server and client are both aware of auth state)
+ */
+export const authWithProvider = (provider) =>
   get(`${config.tessellateRoot}/stateToken`)()
-    .then(params => {
+    .then((params) => {
       /* istanbul ignore if  */
       if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
       OAuth.initialize(config.oauthioKey)
       /* istanbul ignore next */
-      return handleOAuthPopup(provider, params).then(result =>
+      return handleOAuthPopup(provider, params).then((result) =>
         post(`${config.tessellateRoot}/auth`)({
           provider,
           code: result.code,
           stateToken: params.token
-        }).then(response => {
+        }).then((response) => {
           const { token, user, firebaseToken } = response
           if (token) setToken(token)
           if (user) setCurrentUser(user)
@@ -118,7 +119,8 @@ export const authWithProvider = provider =>
           return response
         })
       )
-    }).catch(error => Promise.reject(error))
+    })
+    .catch((error) => Promise.reject(error))
 
 export default {
   getCurrentUser,

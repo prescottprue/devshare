@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch'
 import { createHeaders } from '../auth'
 import { typeReducer } from './index'
 
-const handleResponse = body => {
+const handleResponse = (body) => {
   if (body.code >= 400) {
     const { message, status } = body /* istanbul ignore next */
     return Promise.reject({ message, status })
@@ -10,48 +10,48 @@ const handleResponse = body => {
   return body
 }
 
-export const get = url => _ =>
+export const get = (url) => () =>
   fetch(url, { headers: createHeaders() })
-    .then(response => response.json())
-    .then(body => handleResponse(body))
+    .then((response) => response.json())
+    .then((body) => handleResponse(body))
 
-export const getFile = url => _ =>
+export const getFile = (url) => () =>
   fetch(url, { headers: createHeaders() })
-    .then(body => handleResponse(body))
+    .then((body) => handleResponse(body))
 
-export const remove = url => _ =>
+export const remove = (url) => () =>
   fetch(url, {
     method: 'delete',
     headers: createHeaders()
   })
-    .then(response => response.json())
-    .then(body => handleResponse(body))
+    .then((response) => response.json())
+    .then((body) => handleResponse(body))
 
-export const put = url => object =>
+export const put = (url) => (object) =>
   fetch(url, {
     method: 'put',
     headers: createHeaders(),
     body: JSON.stringify(object)
   })
-    .then(response => response.json())
-    .then(body => handleResponse(body))
+    .then((response) => response.json())
+    .then((body) => handleResponse(body))
 
-export const post = url => object =>
+export const post = (url) => (object) =>
   fetch(url, {
     method: 'post',
     headers: createHeaders(),
     body: JSON.stringify(object)
   })
-    .then(response => response.json())
-    .then(body => handleResponse(body))
+    .then((response) => response.json())
+    .then((body) => handleResponse(body))
 
-export const search = url => (key, query) =>
+export const search = (url) => (key, query) =>
   query ? fetch(`${url}/search?${key}=${query}`, {
     method: 'get',
     headers: createHeaders()
   })
-    .then(response => response.json())
-    .then(body => handleResponse(body))
+    .then((response) => response.json())
+    .then((body) => handleResponse(body))
   : Promise.reject({ message: 'query is required to search' })
 
 export const add = post

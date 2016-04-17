@@ -7,10 +7,10 @@ export default (username) => {
     : `${config.tessellateRoot}/projects`
 
   const methods = {
-    search: query =>
+    search: (query) =>
       search(url)('name', query),
 
-    add: project => {
+    add: (project) => {
       if (!project.name) return Promise.reject({ message: 'name is required' })
       if (project.name.match(/[^A-Za-z0-9\-_!,() ]/)) {
         return Promise.reject({

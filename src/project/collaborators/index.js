@@ -1,6 +1,11 @@
 
-export default class Collaborators {
-  constructor (config) {
-    this.configStuff = config.stuff
+export default (owner, projectname) => {
+  const methods = {
+
   }
+
+  return Object.assign(
+    {},
+    methods
+  )
 }
