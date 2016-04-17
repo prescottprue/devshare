@@ -1,14 +1,22 @@
 import { isBrowser } from './env'
-
+/*
+ * Check to see if Firepad exists
+ */
 export const firepadExists = () => !!(isBrowser() && window.Firepad)
 
+/*
+ * Get Firepad instance if it exists (if not, returns null)
+ */
 export const getFirepad = () => {
   if (firepadExists()) return window.Firepad
   // require firepad in node environment (depends on firepad being in webpack's noParse)
-  if (!isBrowser()) return require('firepad')
+  // if (!isBrowser() && typeof require !== 'undefined') return require('firepad') // require is undefined error when used with React/Webpack
   return null
 }
 
+/*
+ * Get file contents of a Firebase ref using Firebase.Headless
+ */
 export const getTextFromRef = (ref) => {
   // TODO: Load content from getContent endpoint
   if (!firepadExists()) {

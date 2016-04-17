@@ -1,1 +1,5 @@
-export const isBrowser = _ => typeof window !== 'undefined' && typeof document !== 'undefined'
+export const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined'
+
+export default {
+  isBrowser
+}
