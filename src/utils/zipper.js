@@ -1,7 +1,8 @@
 import Jszip from 'jszip'
-import filesave from 'node-safe-filesaver'
+import { saveAs } from 'node-safe-filesaver'
 import { each } from 'lodash'
 
+import { zipSuffix } from '../config'
 import { firepadExists } from './firepader'
 import { get } from './firebaser'
 import { getFile as serverGet } from './cruder'
@@ -30,7 +31,8 @@ export const createZip = (relativePath, directory) => {
     .then(() =>
       zip.generateAsync({ type: 'blob' })
         .then((content) =>
-          filesave.saveAs(content, `${projectName}-devShare-export.zip`))
+          saveAs(content, `${projectName}${zipSuffix}.zip`)
+        )
         .catch((error) => Promise.reject(error))
     )
 }
@@ -45,6 +47,9 @@ export const zipFileSystem = (projectUrl, relativePath) =>
   firepadExists()
     ? get(relativePath)().then((content) => createZip(relativePath, content))
     : serverGet(`${projectUrl}/zip`)()
+      .then((blob) =>
+        saveAs(blob, `${relativePath[relativePath.length - 1]}${zipSuffix}.zip`)
+      )
 
 export default {
   createZip,

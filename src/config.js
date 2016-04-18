@@ -7,5 +7,6 @@ export default {
     '#FF0000', '#FF00F1', '#F1C40F',
     '#D35400', '#FF08', '#2980B9',
     '#9B59B6'
-  ]
+  ],
+  zipSuffix: '-devShare-export'
 }
