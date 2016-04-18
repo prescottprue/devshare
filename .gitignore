@@ -5,7 +5,3 @@ repl.js
 lib
 dist
 **/node_modules
-
-_book/
-
-src/utils/env.js
