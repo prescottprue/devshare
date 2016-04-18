@@ -25,13 +25,11 @@ describe('firepader util', () => {
       window = { Firepad: mockFirepad }
       expect(firepader.getFirepad()).to.equal(mockFirepad)
     })
-    it.skip('returns Firepad in Node', () => {
-
-    })
   })
   describe('getTextFromRef()', () => {
     it('is rejected without firepad', () =>
-      firepader.getTextFromRef().should.eventually.be.rejectedWith({ message: 'Loading content is not yet supported without Firepad' })
+      firepader.getTextFromRef()
+        .should.eventually.be.rejectedWith({ message: 'Loading content is not yet supported without Firepad' })
     )
   })
 })

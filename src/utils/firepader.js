@@ -8,6 +8,7 @@ export const firepadExists = () => !!(isBrowser() && window.Firepad)
 /*
  * Get Firepad instance if it exists (if not, returns null)
  */
+ /* istanbul ignore next */
 export const getFirepad = () => {
   if (firepadExists()) return window.Firepad
   // require firepad in node environment (depends on firepad being in webpack's noParse)
@@ -18,6 +19,7 @@ export const getFirepad = () => {
 /*
  * Get file contents of a Firebase ref using Firebase.Headless
  */
+ /* istanbul ignore next */
 export const getTextFromRef = (ref) => {
   // TODO: Load content from getContent endpoint
   if (!firepadExists()) {

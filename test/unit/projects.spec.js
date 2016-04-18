@@ -26,7 +26,7 @@ describe('Projects', () => {
     it('handles no name', () =>
       projects(username)
         .add({ name: invalidName })
-        .should.eventually.be.rejected
+        .should.eventually.be.rejectedWith({ message: 'name is required' })
     )
     it('handles invalid names', () =>
       projects(username)

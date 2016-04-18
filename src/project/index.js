@@ -1,6 +1,8 @@
 import config from '../config'
 import cruder, { update, remove } from '../utils/cruder'
 import fileSystem from './file-system'
+import cloud from './cloud'
+import collaborators from './collaborators'
 import { isObject } from 'lodash'
 
 export default (owner, projectname) => {
@@ -33,7 +35,9 @@ export default (owner, projectname) => {
   }
 
   const subModels = {
-    fileSystem: fileSystem(owner, projectname)
+    fileSystem: fileSystem(owner, projectname),
+    cloud: cloud(owner, projectname),
+    collaborators: collaborators(owner, projectname)
   }
 
   return Object.assign(

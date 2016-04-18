@@ -1,123 +1,127 @@
 /* global describe it beforeEach nock */
 import project from '../../src/project'
 import config from '../../src/config'
-
+const testProject = 'test'
+const testUser = 'tester'
 describe('Project', () => {
+  describe('constructor', () => {
+    it('handles an object as a param', () =>
+      project({ name: testProject, owner: { username: testUser } })
+        .should.respondTo('get')
+    )
+  })
+
   describe('get', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .get('/projects/mel/goobaly')
+        .get(`/projects/${testUser}/${testProject}`)
         .reply(200, {
-          name: 'goobaly'
+          name: testProject
         })
     })
 
     it('gets the project', () =>
-      project('mel', 'goobaly')
+      project(testUser, testProject)
         .get()
-        .should.eventually.have.property('name', 'goobaly')
+        .should.eventually.have.property('name', testProject)
     )
   })
 
   describe('remove', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .delete('/projects/mel/goobaly')
+        .delete(`/projects/${testUser}/${testProject}`)
         .reply(200, {
-          name: 'goobaly'
+          name: testProject
         })
     })
 
     it('deletes the project', () =>
-      project('mel', 'goobaly')
+      project(testUser, testProject)
         .remove()
         .should.eventually.have.property('name')
     )
   })
 
   describe('rename', () => {
-    let oldProjectname = 'test1'
-    let projectname = 'jazztoes'
+    let newName = 'test1'
 
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .put(`/projects/mel/${oldProjectname}`, {
-          name: projectname
+        .put(`/projects/${testUser}/${testProject}`, {
+          name: newName
         })
         .reply(200, {
-          name: projectname
+          name: newName
         })
     })
 
     it('renames the project', () =>
-      project('mel', oldProjectname)
-        .rename(projectname)
-        .should.eventually.have.property('name', projectname)
+      project(testUser, testProject)
+        .rename(newName)
+        .should.eventually.have.property('name', newName)
     )
   })
 
   describe('addCollaborator', () => {
-    let projectname = 'jazztoes'
     let username = 'scott'
 
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .put(`/projects/mel/${projectname}/collaborators/${username}`)
+        .put(`/projects/${testUser}/${testProject}/collaborators/${username}`)
         .reply(200, {
           collaborators: [
             {
-              username: username,
+              username,
               name: 'Scott Prue'
             }
           ],
-          name: projectname
+          name: testProject
         })
     })
 
     it('adds a collaborator to the project', () =>
-      project('mel', projectname)
+      project(testUser, testProject)
         .addCollaborator(username)
         .should.eventually.have.deep.property('collaborators[0].username', username)
     )
   })
 
   describe('addCollaborators', () => {
-    let projectname = 'jazztoes'
     let username = 'scott'
 
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .put(`/projects/mel/${projectname}/collaborators`)
+        .put(`/projects/${testUser}/${testProject}/collaborators`)
         .reply(200, {
           collaborators: [
             { username },
             { username }
           ],
-          name: projectname
+          name: testProject
         })
     })
 
     it('adds a collaborators to the project', () =>
-      project('mel', projectname)
+      project(testUser, testProject)
         .addCollaborators([{ username }, { username }])
         .should.eventually.have.deep.property('collaborators[0].username', username)
     )
   })
 
   describe('removeCollaborator', () => {
-    const projectname = 'jazztoes'
     const username = 'scott'
 
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .delete(`/projects/mel/${projectname}/collaborators/${username}`)
+        .delete(`/projects/${testUser}/${testProject}/collaborators/${username}`)
         .reply(200, {
           message: 'collaborator successfully deleted'
         })
     })
 
     it('removes a collaborator from the project', () =>
-      project('mel', projectname)
+      project(testUser, testProject)
         .removeCollaborator(username)
         .should.eventually.have.property('message', 'collaborator successfully deleted')
     )
