@@ -1,10 +1,8 @@
 import _cruder from './cruder'
 import _firebaser from './firebaser'
-import _env from './env'
 
 export const cruder = _cruder
 export const firebaser = _firebaser
-export const env = _env
 
 export const typeReducer = (url, types, methods, name) =>
   types
@@ -23,7 +21,9 @@ export const typeReducer = (url, types, methods, name) =>
 export const randomIntBetween = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
+export const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined'
+
 export default Object.assign(
   {},
-  { cruder, firebaser, env, typeReducer }
+  { cruder, firebaser, typeReducer, isBrowser }
 )
