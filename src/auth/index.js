@@ -7,6 +7,7 @@ import {
 } from '../utils/firebaser'
 import { get, put, post } from '../utils/cruder'
 import { isBrowser } from '../utils'
+import project from '../project'
 
 const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document undefined error
 
@@ -83,7 +84,17 @@ export const signup = (userInfo) =>
       const { token, user } = response
       if (token) setToken(token)
       if (user) setCurrentUser(user)
-      return response
+      if (!userInfo.project) return response
+      return project('anon', userInfo.project)
+        .clone(user.username, userInfo.project)
+        .then((cloneRes) => {
+          console.log('response from project clone')
+          return user
+        })
+        .catch((error) => {
+          console.error('error clone new project', error)
+          return user
+        })
     })
 
 /**
