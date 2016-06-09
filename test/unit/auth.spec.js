@@ -64,7 +64,7 @@ describe('Auth', () => {
   describe('logout', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .put(`/logout`)
+        .put('/logout')
         .reply(200, {
           message: 'logout successful'
         })
@@ -80,25 +80,21 @@ describe('Auth', () => {
       auth
         .logout()
         .should.be.fulfilled
-        .then(_ => {
-          return document.cookie.should.be.empty
-        })
+        .then(() => document.cookie.should.equal('token=')) // or document.cookie.should.be.empty
     )
 
     it('removes current user from session storage', () =>
       auth
         .logout()
         .should.be.fulfilled
-        .then(_ => {
-          return expect(window.sessionStorage.getItem('currentUser')).to.be.null
-        })
+        .then(() => expect(window.sessionStorage.getItem('currentUser')).to.be.null)
     )
   })
 
   describe('signup', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .post(`/signup`, { username, password, name, email })
+        .post('/signup', { username, password, name, email })
         .reply(200, {
           user: {
             username, email, name
@@ -117,24 +113,26 @@ describe('Auth', () => {
       auth
         .signup({ username, password, name, email })
         .should.be.fulfilled
-        .then(_ => {
-          return cookie.parse(document.cookie).should.have.property('token', token)
-        })
+        .then(() =>
+          cookie.parse(document.cookie).should.have.property('token', token)
+        )
     )
 
     it('saves the current user', () =>
       auth
         .signup({ username, password, name, email })
         .should.be.fulfilled
-        .then(_ => {
-          return JSON.parse(window.sessionStorage.getItem('currentUser')).should.have.property('username', username)
-        })
+        .then(() =>
+          JSON
+            .parse(window.sessionStorage.getItem('currentUser'))
+            .should.have.property('username', username)
+        )
     )
   })
   describe('authWithProvider', () => {
     beforeEach(() => {
       nock(`${config.tessellateRoot}`)
-        .get(`/stateToken`)
+        .get('/stateToken')
         .reply(200, {
           message: 'Success'
         })

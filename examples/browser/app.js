@@ -59,6 +59,11 @@ function addProject () {
     .then(res => console.log('project:', res))
 }
 
+function cloneProject () {
+  devshare.project('anon', '133963')
+    .clone('scott', 'copiedOver')
+    .then(res => console.log('project:', res))
+}
 // Set status styles
 function setStatus () {
   var statusEl = document.getElementById('status')

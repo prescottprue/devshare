@@ -1,9 +1,9 @@
-'use strict'
-var webpack = require('webpack')
-var pkg = require('./package.json')
-var config = require('./config.json')
+const webpack = require('webpack')
+const pkg = require('./package.json')
+const config = require('./config.json')
 
-const bannerText = `${config.library.file}.js v${pkg.version} | (c) Kyper Digital Inc.`
+const bannerText = config.library.file + '.js v' + pkg.version + ' | (c) Kyper Digital Inc.'
+
 module.exports = {
   module: {
     loaders: [
@@ -18,7 +18,7 @@ module.exports = {
   output: {
     library: config.library.export,
     libraryTarget: 'umd',
-    publicPath: `/${config.folders.dist}/`
+    publicPath: '/' + config.folders.dist + '/'
   },
   resolve: {
     extensions: ['', '.js']

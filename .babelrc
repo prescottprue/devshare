@@ -1,4 +1,4 @@
 {
   "presets": ["es2015"],
-  "plugins": ["add-module-exports", "lodash"]
+  "plugins": ["add-module-exports", "lodash", "transform-object-assign"]
 }

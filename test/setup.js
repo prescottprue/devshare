@@ -15,7 +15,7 @@ var nock = global.nock = require('nock')
 var Promise = require('es6-promise').Promise
 global.Promise = Promise
 
-var jsdom = require('jsdom')
+var jsdom = require('node-jsdom')
 var doc = jsdom.jsdom('<html><body></body></html>')
 var win = doc.defaultView
 global.document = doc

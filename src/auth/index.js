@@ -87,18 +87,14 @@ export const signup = (userInfo) =>
       if (!userInfo.project) return response
       return project('anon', userInfo.project)
         .clone(user.username, userInfo.project)
-        .then((cloneRes) => {
-          console.log('response from project clone')
-          return user
-        })
-        .catch((error) => {
-          console.error('error clone new project', error)
-          return user
-        })
+        .then((cloneRes) => user)
+        .catch((error) => Object.assign(user, { error }))
     })
 
 /**
 * @description Open oauth popup and handle result
+* @param {String} provider - Oauth Provider (google, github, facebook)
+* @param {String} token - Token from server
 */
 const handleOAuthPopup = (provider, params) =>
   OAuth
@@ -109,6 +105,7 @@ const handleOAuthPopup = (provider, params) =>
 /**
  * @description Authenticate using a token generated from the server (so
  * server and client are both aware of auth state)
+ * @param {String} provider - Oauth Provider (google, github, facebook)
  */
 export const authWithProvider = (provider) =>
   get(`${config.tessellateRoot}/stateToken`)()
