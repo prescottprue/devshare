@@ -2,6 +2,7 @@ import config from '../config'
 import cruder, { update, remove } from '../utils/cruder'
 import fileSystem from './file-system'
 import cloud from './cloud'
+import projects from '../projects'
 import collaborators from './collaborators'
 import { isObject } from 'lodash'
 
@@ -27,7 +28,11 @@ export default (owner, projectname) => {
       remove(`${url}/collaborators/${username}`)(),
 
     clone: (newOwner, newName) =>
-      fileSystem(owner, projectname).clone(newOwner, newName),
+      projects(newOwner)
+        .add({ name: newName })
+        .then((res) =>
+          fileSystem(owner, projectname).clone(newOwner, newName)
+        ),
 
     download: () =>
       fileSystem(owner, projectname).download()
