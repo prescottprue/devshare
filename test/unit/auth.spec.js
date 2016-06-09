@@ -80,7 +80,7 @@ describe('Auth', () => {
       auth
         .logout()
         .should.be.fulfilled
-        .then(() => document.cookie.should.equal('token=')) // or document.cookie.should.be.empty
+        .then(() => document.cookie.should.be.empty) // or document.cookie.should.equal('token=')
     )
 
     it('removes current user from session storage', () =>
