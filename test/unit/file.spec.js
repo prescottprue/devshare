@@ -2,6 +2,7 @@
 import file, { modeFromFileExtension } from '../../src/project/file-system/file'
 const testUser = 'tester'
 const testProject = 'test'
+
 describe('File', () => {
   describe('constructor', () => {
     it('handles string path', () =>

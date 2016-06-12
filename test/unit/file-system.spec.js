@@ -1,19 +1,45 @@
-/* global describe it beforeEach */
+/* global describe it beforeEach afterEach */
 import fileSystem from '../../src/project/file-system'
 const testUser = 'tester'
 const testProject = 'test'
+
 describe('File System', () => {
   describe('get()', () => {
     beforeEach(() =>
       fileSystem(testUser, testProject)
       .addFile('src/index.html', 'some file content')
     )
+    afterEach(() =>
+      fileSystem(testUser, testProject).file('src/index.html').remove()
+    )
     it('gets project', () =>
       fileSystem(testUser, testProject)
         .get().should.eventually.have.property('src')
     )
   })
-
+  describe('addFile()', () => {
+    it('exists', () =>
+      fileSystem(testUser, testProject).should.respondTo('addFile')
+    )
+    it('adds a file', () =>
+      fileSystem(testUser, testProject)
+        .addFile('src/index.html').should.eventually.have.property('meta')
+    )
+    it('adds a file with content', () =>
+      fileSystem(testUser, testProject)
+        .addFile('src/index.html', 'some content')
+        .should.eventually.have.property('meta')
+    )
+  })
+  describe('addFolder()', () => {
+    it('exists', () =>
+      fileSystem(testUser, testProject).should.respondTo('addFolder')
+    )
+    it('adds a folder', () =>
+      fileSystem(testUser, testProject)
+        .addFolder('something').should.eventually.have.property('meta')
+    )
+  })
   describe('clone', () => {
     it('exists', () =>
       fileSystem(testUser, testProject).should.respondTo('clone')
@@ -44,6 +70,18 @@ describe('File System', () => {
     it('returns a valid hex value', () =>
       fileSystem(testUser, testProject)
         .getUserColor().should.be.a.string
+    )
+  })
+
+  describe('sub-models', () => {
+    it('entity', () =>
+      fileSystem(testUser, testProject).should.respondTo('entity')
+    )
+    it('file', () =>
+      fileSystem(testUser, testProject).should.respondTo('file')
+    )
+    it('folder', () =>
+      fileSystem(testUser, testProject).should.respondTo('folder')
     )
   })
 })
