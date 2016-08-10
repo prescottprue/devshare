@@ -57,12 +57,12 @@ const removeCurrentUser = () => {
 * @param {String} password - Password of user to login as
 * @param {String} project - Name of project to clone to account after login (optional)
 */
-export const login = (username, password, project) => {
+export const login = (username, password, projectName) => {
   if (!username) return Promise.reject({ message: 'Username or Email is required to login ' })
   if (isObject(username) && username.password) {
     password = username.password
     username = username.username
-    if (username.project) project = username.project
+    if (username.project) projectName = username.project
   }
   if (isObject(username) && username.provider) return authWithProvider(username)
   return put(`${config.tessellateRoot}/login`)({ username, password })
@@ -72,9 +72,9 @@ export const login = (username, password, project) => {
       if (user) setCurrentUser(user)
       if (!firebaseToken) return response
       return authWithFirebase(firebaseToken)
-        .then((firebaseData) => project
-          ? project('anon', project)
-            .clone(user.username, project)
+        .then((firebaseData) => projectName
+          ? project('anon', projectName)
+            .clone(user.username, projectName)
             .then((cloneRes) => response)
             .catch((error) => Object.assign(user, { error }))
           : response
