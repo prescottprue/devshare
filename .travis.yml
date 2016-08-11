@@ -30,7 +30,8 @@ deploy:
     api_key: $NPM_TOKEN
     on:
       branch: master
-      condition: $NPM_TOKEN && $TRAVIS_PULL_REQUEST = false
+      tags: true
+      condition: $TRAVIS_PULL_REQUEST = false
 
 addons:
   code_climate:
