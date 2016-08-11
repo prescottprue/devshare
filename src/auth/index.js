@@ -1,4 +1,4 @@
-import { isObject } from 'lodash'
+import { isObject, isArray } from 'lodash'
 import cookie from 'cookie'
 import config from '../config'
 import {
@@ -64,6 +64,14 @@ export const login = (username, password, projectName) => {
     username = username.username
     if (username.project) projectName = username.project
   }
+  // Handle Array as first param
+  if (isArray(username)) {
+    if (username.length > 2) {
+      projectName = username[2]
+    }
+    password = username[1]
+    username = username[0]
+  }
   if (isObject(username) && username.provider) return authWithProvider(username)
   return put(`${config.tessellateRoot}/login`)({ username, password })
     .then((response) => {
@@ -126,9 +134,9 @@ export const signup = (userInfo) =>
 */
 const handleOAuthPopup = (provider, params) =>
   OAuth
-  .popup(provider, { state: params.token })
-  .done((result) => Promise.resolve(result))
-  .fail((error) => Promise.reject(error))
+    .popup(provider, { state: params.token })
+    .done((result) => Promise.resolve(result))
+    .fail((error) => Promise.reject(error))
 
 /**
  * @description Authenticate using a token generated from the server (so
