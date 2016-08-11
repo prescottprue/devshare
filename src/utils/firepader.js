@@ -23,7 +23,7 @@ export const getFirepad = () => {
 export const getTextFromRef = (ref) => {
   // TODO: Load content from getContent endpoint
   if (!firepadExists()) {
-    console.error('Loading content is not yet supported without Firepad')
+    console.error('Loading content is not yet supported without Firepad') // eslint-ignore-line no-console
     return Promise.reject({ message: 'Loading content is not yet supported without Firepad' })
   }
   const Firepad = getFirepad()
