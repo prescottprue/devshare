@@ -10,19 +10,27 @@ branches:
 
 sudo: false
 
-script: "npm run test:cov"
+script:
+  - npm run lint:fix
+  - npm run test:cov
 
 deploy:
-  skip_cleanup: true
-  provider: s3
-  access_key_id: $AWS_KEY
-  secret_access_key: $AWS_SECRET
-  bucket: $AWS_BUCKET
-  acl: public_read
-  local_dir: dist
-  on:
-    branch: master
-    condition: $AWS_KEY
+  - provider: s3
+    skip_cleanup: true
+    access_key_id: $AWS_KEY
+    secret_access_key: $AWS_SECRET
+    bucket: $AWS_BUCKET
+    acl: public_read
+    local_dir: dist
+    upload-dir: devshare/latest
+    on:
+      branch: master
+      condition: $AWS_KEY
+  - provider: npm
+    api_key: $NPM_TOKEN
+    on:
+      branch: master
+      condition: $NPM_TOKEN && $TRAVIS_PULL_REQUEST = false
 
 addons:
   code_climate:

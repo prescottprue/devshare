@@ -1,6 +1,6 @@
 {
   "name": "devshare",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Library to communicate with tessellate application building/managing service.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -22,8 +22,8 @@
     "watch:umd": "npm run build:umd -- --stats --progress --colors --watch",
     "watch:lib": "npm run build:lib -- --stats --progress --colors --watch",
     "watch": "npm run watch:umd",
-    "prepublish": "npm run clean && npm run test && npm run build",
-    "upload": "node ./bin/upload"
+    "prepublish": "npm run clean && npm run test:cov && npm run build",
+    "prepush": "npm run lint:fix"
   },
   "repository": {
     "type": "git",
