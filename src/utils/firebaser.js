@@ -1,23 +1,36 @@
-import config from '../config'
-import Firebase from 'firebase'
+import firebase from 'firebase'
 import { typeReducer } from './index'
 import { isArray } from 'lodash'
+import { firebase as firebaseConfig } from '../config'
 
+const init = () => {
+  try {
+    firebase.initializeApp(firebaseConfig)
+  } catch (err) {
+    console.warn('Firebase init error:', err)
+  }
+}
+
+export const checkSetup = () => {
+  if (!window.firebase || !(firebase.app instanceof Function)) {
+    init()
+  }
+}
+
+// var auth = firebase.auth()
+
+// Handles abnormal characters within paths
 export const createFirebaseUrl = (relativePath) => () => {
   if (!isArray(relativePath)) relativePath = [relativePath]
-  return [config.firebaseRoot]
-    .concat(
-      relativePath.map((loc) => loc
+  return relativePath.map((loc) => loc
         ? loc.replace(/[.]/g, ':')
         .replace(/[#$\[\]]/g, '_-_')
         : ''
-      )
-    )
-    .join('/')
+    ).join('/')
 }
 
 export const createFirebaseRef = (relativePath) => () =>
-  new Firebase(createFirebaseUrl(relativePath)())
+  new firebase.database().ref(createFirebaseUrl(relativePath)()) // eslint-disable-line new-cap
 
 export const get = (relativePath) => () =>
   createFirebaseRef(relativePath)()

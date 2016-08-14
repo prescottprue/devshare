@@ -12,7 +12,8 @@ export const firepadExists = () => !!(isBrowser() && window.Firepad)
 export const getFirepad = () => {
   if (firepadExists()) return window.Firepad
   // require firepad in node environment (depends on firepad being in webpack's noParse)
-  // if (!isBrowser() && typeof require !== 'undefined') return require('firepad') // require is undefined error when used with React/Webpack
+  // require is undefined error when used with React/Webpack
+  // if (!isBrowser() && typeof require !== 'undefined') return require('firepad')
   return null
 }
 

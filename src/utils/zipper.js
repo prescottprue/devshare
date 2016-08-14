@@ -11,6 +11,7 @@ import file from '../project/file-system/file'
 export const createZip = (relativePath, directory) => {
   let zip = new Jszip()
   let promiseArray = []
+
   let handleZip = (fbChildren) => {
     each(fbChildren, (child) => {
       if (!child.meta || child.meta.entityType === 'folder') {
@@ -25,8 +26,11 @@ export const createZip = (relativePath, directory) => {
       promiseArray.push(promise)
     })
   }
+
   handleZip(directory)
+
   const projectName = relativePath[relativePath.length - 1]
+
   return Promise.all(promiseArray)
     .then(() =>
       zip.generateAsync({ type: 'blob' })
@@ -38,7 +42,7 @@ export const createZip = (relativePath, directory) => {
 }
 
 /*
- * Create a zip file with all of the files within a project's file system
+ * @description Create a zip file with all of the files within a project's file system
  * Note: Firepad is used to get the file's contents for zipping however,
  * if Firepad is not available, the ZIP file will be requested from the server
  */

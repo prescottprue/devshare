@@ -1,15 +1,13 @@
-import { isObject, isArray } from 'lodash'
-import cookie from 'cookie'
+import { isObject, isArray, capitalize } from 'lodash'
 import config from '../config'
+import firebase from 'firebase'
 import {
   auth as authWithFirebase,
   unauth as unauthFromFirebase
 } from '../utils/firebaser'
-import { get, put, post } from '../utils/cruder'
+import { put, post } from '../utils/cruder'
 import { isBrowser } from '../utils'
 import project from '../project'
-
-const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document undefined error
 
 let token
 let currentUser
@@ -22,17 +20,6 @@ export const createHeaders = () => {
   if (isBrowser()) return header /* istanbul ignore next  */
   header.Authorization = `Bearer ${token}` /* istanbul ignore next */
   return header
-}
-
-const setToken = (nextToken) => {
-  if (isBrowser()) document.cookie = cookie.serialize('token', nextToken)
-  token = nextToken
-}
-
-const removeToken = () => {
-  /* istanbul ignore else  */
-  if (isBrowser()) document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-  token = null
 }
 
 export const getCurrentUser = () => {
@@ -53,7 +40,8 @@ const removeCurrentUser = () => {
 
 /**
 * @description Login/Authenticate as a user
-* @param {String|Object} username - Username or email of user to login as. Or object containing username, password, and project (optional)
+* @param {String|Object} username - Username or email of user to login as.
+* Or object containing username, password, and project (optional)
 * @param {String} password - Password of user to login as
 * @param {String} project - Name of project to clone to account after login (optional)
 */
@@ -72,11 +60,12 @@ export const login = (username, password, projectName) => {
     password = username[1]
     username = username[0]
   }
+  // console.log('login', { username, password, projectName })
   if (isObject(username) && username.provider) return authWithProvider(username)
+  // firebase.auth.signInWithEmailAndPassword(email, password)
   return put(`${config.tessellateRoot}/login`)({ username, password })
     .then((response) => {
-      const { token, user, firebaseToken } = response
-      if (token) setToken(token)
+      const { user, firebaseToken } = response
       if (user) setCurrentUser(user)
       if (!firebaseToken) return response
       return authWithFirebase(firebaseToken)
@@ -96,7 +85,6 @@ export const login = (username, password, projectName) => {
 export const logout = () =>
   put(`${config.tessellateRoot}/logout`)()
     .then((response) => {
-      removeToken()
       removeCurrentUser()
       unauthFromFirebase()
       return response
@@ -113,8 +101,7 @@ export const logout = () =>
 export const signup = (userInfo) =>
   post(`${config.tessellateRoot}/signup`)(userInfo)
     .then((response) => {
-      const { token, user, firebaseToken } = response
-      if (token) setToken(token)
+      const { user, firebaseToken } = response
       if (user) setCurrentUser(user)
       if (!firebaseToken) return response
       return authWithFirebase(firebaseToken)
@@ -128,43 +115,25 @@ export const signup = (userInfo) =>
     })
 
 /**
-* @description Open oauth popup and handle result
-* @param {String} provider - Oauth Provider (google, github, facebook)
-* @param {String} token - Token from server
-*/
-const handleOAuthPopup = (provider, params) =>
-  OAuth
-    .popup(provider, { state: params.token })
-    .done((result) => Promise.resolve(result))
-    .fail((error) => Promise.reject(error))
-
-/**
  * @description Authenticate using a token generated from the server (so
  * server and client are both aware of auth state)
  * @param {String} provider - Oauth Provider (google, github, facebook)
  */
-export const authWithProvider = (provider) =>
-  get(`${config.tessellateRoot}/stateToken`)()
-    .then((params) => {
-      /* istanbul ignore if  */
-      if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
-      OAuth.initialize(config.oauthioKey)
-      /* istanbul ignore next */
-      return handleOAuthPopup(provider, params).then((result) =>
-        post(`${config.tessellateRoot}/auth`)({
-          provider,
-          code: result.code,
-          stateToken: params.token
-        }).then((response) => {
-          const { token, user, firebaseToken } = response
-          if (token) setToken(token)
-          if (user) setCurrentUser(user)
-          if (firebaseToken) authWithFirebase(firebaseToken)
-          return response
-        })
-      )
+export const authWithProvider = (providerName) => {
+  // console.log('auth with provider:', providerName)
+  const providerMethod = `${capitalize(providerName)}AuthProvider`
+  const provider = new firebase.auth[providerMethod]()
+  return firebase.auth.signInWithPopup(provider)
+    .then((result) => {
+      console.log('auth with popup', result)
+      const accessToken = result.credential.accessToken
+      console.log('auth with popup', accessToken)
     })
-    .catch((error) => Promise.reject(error))
+    .catch((error) => {
+      console.error('Error signing in with popup', error)
+      return Promise.reject(error)
+    })
+}
 
 export default {
   getCurrentUser,
