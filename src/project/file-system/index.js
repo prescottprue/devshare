@@ -1,8 +1,7 @@
-
 import file from './file'
 import entity from './entity'
 import folder from './folder'
-import { tessellateRoot, filesRoot, highlightColors } from '../../config'
+import { filesRoot, highlightColors, paths } from '../../config'
 import { randomIntBetween } from '../../utils'
 import { zipFileSystem } from '../../utils/zipper'
 import firebaser, {
@@ -11,8 +10,8 @@ import firebaser, {
   } from '../../utils/firebaser'
 
 export default (owner, projectname) => {
-  const relativePath = [filesRoot, owner, projectname]
-  const projectUrl = `${tessellateRoot}/projects/${owner}/${projectname}`
+  const relativePath = [paths, owner, projectname]
+  const projectUrl = `${paths.files}/projects/${owner}/${projectname}`
 
   const methods = {
     firebaseUrl: () =>

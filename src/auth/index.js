@@ -1,6 +1,8 @@
 import { isObject, isArray, capitalize } from 'lodash'
 import firebase from 'firebase'
 import project from '../project'
+import { set } from '../utils/firebaser'
+import { usersRoot } from '../config'
 
 /**
 * @description Login/Authenticate as a user
@@ -10,13 +12,17 @@ import project from '../project'
 * @param {String} project - Name of project to clone to account after login (optional)
 */
 export const login = (email, password, projectName) => {
-  if (!email) return Promise.reject({ message: 'Username or Email is required to login ' })
+  if (!email) {
+    return Promise.reject({ message: 'Username or Email is required to login ' })
+  }
+
   // First param as and object containing email and password
   if (isObject(email) && email.password) {
     password = email.password
     email = email.email
     if (email.project) projectName = email.project
   }
+
   // Handle Array as first param
   if (isArray(email)) {
     if (email.length > 2) {
@@ -25,9 +31,8 @@ export const login = (email, password, projectName) => {
     password = email[1]
     email = email[0]
   }
-  // console.log('login', { email, password, projectName })
+
   // if (isObject(email) && email.provider) return authWithProvider(email.provider)
-  // firebase.auth.signInWithEmailAndPassword(email, password)
   return firebase.auth().signInWithEmailAndPassword(email, password)
     .then((response) => {
       const { user } = response
@@ -37,6 +42,7 @@ export const login = (email, password, projectName) => {
             .then((cloneRes) => response)
             .catch((error) => Object.assign(user, { error }))
     })
+    .catch((error) => Promise.reject(error))
 }
 
 /**
@@ -58,25 +64,23 @@ export const logout = () =>
 * @param {String} userInfo.project - Name of project to clone to account after signup (optional)
 */
 export const signup = (userInfo) => {
-  if (!userInfo.email || userInfo.password) {
+  if (!userInfo.email || !userInfo.password) {
     return Promise.reject('Email and Password are required')
   }
+
   return firebase.auth()
     .createUserWithEmailAndPassword(userInfo.email, userInfo.password)
     .then((response) => {
-      !userInfo.project ? response
-        : project('anon', userInfo.project)
-            .clone(userInfo.username, userInfo.project)
-            .then((cloneRes) => response)
-            .catch((error) => Promise.reject(Object.assign(userInfo, { error })))
+      return set([usersRoot, userInfo.uid])(userInfo)
+          .then((res2) => !userInfo.project ? response
+              : project('anon', userInfo.project)
+                  .clone(userInfo.username, userInfo.project)
+                  .then((cloneRes) => response)
+                  .catch((error) => Promise.reject(Object.assign(userInfo, { error })))
+          )
+          .catch((error) => Promise.reject(error))
     })
-    .catch(({ code, message }) => {
-      if (code === 'auth/weak-password') {
-        return Promise.reject('The password is too weak.')
-      }
-      console.log({code, message})
-      return Promise.reject(message)
-    })
+    .catch((error) => Promise.reject(error))
 }
 
 /**
@@ -85,12 +89,10 @@ export const signup = (userInfo) => {
  * @param {String} provider - Oauth Provider (google, github, facebook)
  */
 export const authWithProvider = (providerName) => {
-  // console.log('auth with provider:', providerName)
   const providerMethod = `${capitalize(providerName)}AuthProvider`
   const provider = new firebase.auth[providerMethod]()
   return firebase.auth().signInWithPopup(provider)
     .then((result) => {
-      console.log('auth with popup', result)
       const accessToken = result.credential.accessToken
       const { user } = result
       console.log('auth with popup', { accessToken, user })

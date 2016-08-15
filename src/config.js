@@ -1,15 +1,14 @@
 export default {
-  tessellateRoot: 'https://kyper-tessellate.herokuapp.com', // TODO: Change to tessellate.kyper.io once SSL is enabled
-  firebaseRoot: process.env.NODE_ENV !== 'test'
-    ? 'https://kyper-tech.firebaseio.com/tessellate'
-    : 'https://devshare-test.firebaseio.com/tessellate',
-  oauthioKey: 'sxwuB9Gci8-4pBH7xjD0V_jooNU',
-  filesRoot: 'files',
+  paths: {
+    files: 'files',
+    users: 'users',
+    projects: 'projects'
+  },
   firebase: {
-    apiKey: 'AIzaSyCiJDBRh-DGFvQtjIeUcDs6Q9MLD0JnZvY',
-    authDomain: 'kyper-tech.firebaseapp.com',
-    databaseURL: 'https://kyper-tech.firebaseio.com',
-    storageBucket: 'kyper-tech.appspot.com'
+    apiKey: 'AIzaSyBWtt-UVc9I7ZMADqn3-WyoJB-L2HQrRhk',
+    authDomain: 'pruvit-968.firebaseapp.com',
+    databaseURL: 'https://pruvit-968.firebaseio.com',
+    storageBucket: 'pruvit-968.appspot.com'
   },
   highlightColors: [
     '#FF0000', '#FF00F1', '#F1C40F',

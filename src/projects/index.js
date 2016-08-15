@@ -1,14 +1,10 @@
-import config from '../config'
-import cruder, { search, add } from '../utils/cruder'
+import { paths } from '../config'
+import firebaser, { push, search, update } from '../utils/firebaser'
 
-export default (username) => {
-  const url = username
-    ? `${config.tessellateRoot}/projects/${username}`
-    : `${config.tessellateRoot}/projects`
-
+export default (uid) => {
   const methods = {
     search: (query) =>
-      search(url)('name', query),
+      search(paths.projects)('name', query),
 
     add: (project) => {
       if (!project.name) return Promise.reject({ message: 'name is required' })
@@ -17,14 +13,16 @@ export default (username) => {
           message: 'name may not contain symbols other than: _ ! , ( )'
         })
       }
-      return add(url)(project)
+      const newProject = Object.assign(project, { owner: uid })
+      return push(paths.projects)(newProject)
+        .then(update([paths.users, uid])(newProject))
     }
 
   }
 
   return Object.assign(
     {},
-    cruder(url, ['get']),
+    firebaser(paths.projects, ['get', 'update']),
     methods
   )
 }

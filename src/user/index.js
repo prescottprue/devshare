@@ -1,16 +1,14 @@
-import config from '../config'
-import cruder from '../utils/cruder'
+import { paths } from '../config'
+import firebaser from '../utils/firebaser'
 
 export default (username) => {
-  const url = `${config.tessellateRoot}/users/${username}`
-
   const methods = {
 
   }
 
   return Object.assign(
     {},
-    cruder(url, ['get', 'update', 'remove']),
+    firebaser(paths.users, ['get', 'update', 'remove']),
     methods
   )
 }

@@ -1,5 +1,4 @@
-import config from '../config'
-import cruder, { update, remove } from '../utils/cruder'
+import firebaser, { update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
@@ -12,26 +11,28 @@ export default (owner, projectname) => {
     projectname = owner.name
     owner = owner.owner.username
   }
-  const url = `${config.tessellateRoot}/projects/${owner}/${projectname}`
+
+  const name = `${owner}/${projectname}`
 
   const methods = {
     rename: (newProjectname) =>
-      update(url)({ name: newProjectname }),
+      update(name)({ name: newProjectname }),
 
     addCollaborator: (username) =>
-      update(`${url}/collaborators/${username}`)(),
+      update(`${name}/collaborators/${username}`)(),
 
     addCollaborators: (collaborators) =>
-      update(`${url}/collaborators`)(collaborators),
+      update(`${name}/collaborators`)(collaborators),
 
     removeCollaborator: (username) =>
-      remove(`${url}/collaborators/${username}`)(),
+      remove(`${name}/collaborators/${username}`)(),
 
     clone: (newOwner, newName) =>
       projects(newOwner)
         .add({ name: newName })
         .then((res) =>
-          fileSystem(owner, projectname).clone(newOwner, newName)
+          fileSystem(owner, projectname)
+            .clone(newOwner, newName)
         ),
 
     download: () =>
@@ -47,7 +48,7 @@ export default (owner, projectname) => {
 
   return Object.assign(
     {},
-    cruder(url, ['get', 'remove']),
+    firebaser(name, ['get', 'remove']),
     methods,
     subModels
   )

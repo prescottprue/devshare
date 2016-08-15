@@ -23,14 +23,14 @@ function signup () {
   var password = document.getElementById('signup-password').value
   var name = document.getElementById('signup-name').value
   var email = document.getElementById('signup-email').value
-  return devshare.signup(
-    {
-      username: username,
-      email: email,
-      password: password,
-      name: name
-    }
-  )
+  var signupObj = {
+    username: username,
+    email: email,
+    password: password,
+    name: name
+  }
+  console.log('calling signup:', signupObj)
+  return devshare.signup(signupObj)
   .then(res => setStatus())
 }
 
