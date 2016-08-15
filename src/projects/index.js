@@ -1,7 +1,8 @@
 import { paths } from '../config'
-import firebaser, { push, search, update } from '../utils/firebaser'
+import { getCurrentUser } from '../auth'
+import firebaser, { push, search, get, set } from '../utils/firebaser'
 
-export default (uid) => {
+export default (username) => {
   const methods = {
     search: (query) =>
       search(paths.projects)('name', query),
@@ -13,9 +14,25 @@ export default (uid) => {
           message: 'name may not contain symbols other than: _ ! , ( )'
         })
       }
-      const newProject = Object.assign(project, { owner: uid })
+      const currentUser = getCurrentUser()
+      if (!currentUser || !currentUser.uid) {
+        console.error('You must be logged in to create a project')
+        return Promise.reject({message: 'You must be logged in to create a project'})
+      }
+      const newProject = Object.assign(project, { owner: currentUser.uid })
       return push(paths.projects)(newProject)
-        .then(update([paths.users, uid])(newProject))
+        .then((res) => {
+          get([paths.users, currentUser.uid, paths.projects])()
+            .then((projectsList) => {
+              if (projectsList === null) return set([paths.users, currentUser.uid, paths.projects])([newProject.key])
+              return set([
+                paths.users,
+                currentUser.uid,
+                paths.projects,
+                projectsList.length
+              ])(newProject.key)
+            })
+        })
     }
 
   }

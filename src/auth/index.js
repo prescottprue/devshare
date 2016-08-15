@@ -2,7 +2,7 @@ import { isObject, isArray, capitalize } from 'lodash'
 import firebase from 'firebase'
 import project from '../project'
 import { set } from '../utils/firebaser'
-import { usersRoot } from '../config'
+import { paths } from '../config'
 
 /**
 * @description Login/Authenticate as a user
@@ -63,20 +63,26 @@ export const logout = () =>
 * @param {String} userInfo.password - Password of new user
 * @param {String} userInfo.project - Name of project to clone to account after signup (optional)
 */
-export const signup = (userInfo) => {
-  if (!userInfo.email || !userInfo.password) {
+export const signup = ({ username, email, password, project, name }, projectName) => {
+  if (!email || !username || !password) {
     return Promise.reject('Email and Password are required')
   }
+  // Handle clone project name as part of first param
+  if (project) projectName = project
+
+  // Set name to username if not provided
+  if (!name) name = username
 
   return firebase.auth()
-    .createUserWithEmailAndPassword(userInfo.email, userInfo.password)
-    .then((response) => {
-      return set([usersRoot, userInfo.uid])(userInfo)
-          .then((res2) => !userInfo.project ? response
-              : project('anon', userInfo.project)
-                  .clone(userInfo.username, userInfo.project)
-                  .then((cloneRes) => response)
-                  .catch((error) => Promise.reject(Object.assign(userInfo, { error })))
+    .createUserWithEmailAndPassword(email, password)
+    .then(({ providerData, uid }) => {
+      const newUser = Object.assign({}, { username, email, name, providerData })
+      return set([paths.users, uid])(newUser)
+          .then(() => !projectName ? newUser
+              : project('anon', projectName)
+                  .clone(username, projectName)
+                  .then((cloneRes) => newUser)
+                  .catch((error) => Promise.reject(error))
           )
           .catch((error) => Promise.reject(error))
     })
@@ -84,8 +90,7 @@ export const signup = (userInfo) => {
 }
 
 /**
- * @description Authenticate using a token generated from the server (so
- * server and client are both aware of auth state)
+ * @description Authenticate using a 3rd party provider
  * @param {String} provider - Oauth Provider (google, github, facebook)
  */
 export const authWithProvider = (providerName) => {

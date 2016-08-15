@@ -1,4 +1,4 @@
-import { paths } from '../config'
+import { paths } from '../../config'
 import firebaser from '../../utils/firebaser'
 
 export default (owner, projectname) => {

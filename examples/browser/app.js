@@ -53,6 +53,7 @@ function getProject () {
   devshare.project('scott', 'angularExample')
     .get()
     .then(res => console.log('project:', res))
+    .catch(error => console.error('Error getting project:', error))
 }
 
 function addProject () {

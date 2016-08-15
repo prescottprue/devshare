@@ -1,6 +1,6 @@
 import firebase from 'firebase'
 import { typeReducer } from './index'
-import { isArray } from 'lodash'
+import { isArray, isString } from 'lodash'
 import { firebase as firebaseConfig } from '../config'
 
 /**
@@ -21,10 +21,11 @@ export const init = () => {
  */
 export const createFirebaseUrl = (relativePath) => () => {
   if (!isArray(relativePath)) relativePath = [relativePath]
-  return relativePath.map((loc) => loc
+  // TODO: Check for path not being string
+  return relativePath.map((loc) => (loc && isString(loc))
         ? loc.replace(/[.]/g, ':')
           .replace(/[#$\[\]]/g, '_-_')
-        : ''
+        : loc
     ).join('/')
 }
 
@@ -61,11 +62,13 @@ export const set = (relativePath) => (object) =>
  * @param {Array|String} relativePath - Releative
  * @return {Promise}
  */
-export const push = (relativePath) => (object) =>
-  createFirebaseRef(relativePath)()
-    .push()
-    .set(object)
-    .then((data) => data ? data.val() : object)
+export const push = (relativePath) => (object) => {
+  const pushRef = createFirebaseRef(relativePath)().push()
+  return pushRef.set(object)
+  .then((data) => data ? Object.assign({}, { key: pushRef.key }, data) : Object.assign(object, { key: pushRef.key }))
+}
+
+export const add = push
 
 /**
  * @description Update data at a Firebase location based on array or string path
@@ -75,7 +78,7 @@ export const push = (relativePath) => (object) =>
 export const update = (relativePath) => (object) =>
   createFirebaseRef(relativePath)()
     .update(object)
-    .then((data) => data.val())
+    .then((data) => data ? data.val() : object)
 
 /**
  * @description Remove data a Firebase location based on array or string path
@@ -122,6 +125,7 @@ export default (url, types) => {
     get,
     getChild,
     set,
+    add,
     sync,
     update,
     remove,
