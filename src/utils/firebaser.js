@@ -3,21 +3,13 @@ import { typeReducer } from './index'
 import { isArray } from 'lodash'
 import { firebase as firebaseConfig } from '../config'
 
-const init = () => {
+export const init = () => {
   try {
     firebase.initializeApp(firebaseConfig)
   } catch (err) {
     console.warn('Firebase init error:', err)
   }
 }
-
-export const checkSetup = () => {
-  if (!window.firebase || !(firebase.app instanceof Function)) {
-    init()
-  }
-}
-
-// var auth = firebase.auth()
 
 // Handles abnormal characters within paths
 export const createFirebaseUrl = (relativePath) => () => {
@@ -61,14 +53,6 @@ export const getChild = (relativePath) => (child) =>
     .child(child)
     .once('value')
     .then((data) => data.val())
-
-export const auth = (token) =>
-  createFirebaseRef([])()
-    .authWithCustomToken(token)
-
-export const unauth = () =>
-  createFirebaseRef([])()
-    .unauth()
 
 export default (url, types) => {
   let methods = {

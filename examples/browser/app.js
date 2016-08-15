@@ -3,6 +3,8 @@
 let devshare = window.Devshare.default
 console.log('Devshare', devshare)
 
+devshare.init()
+
 setStatus()
 
 function login () {
