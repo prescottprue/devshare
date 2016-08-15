@@ -11,6 +11,6 @@ export default () => {
   return Object.assign(
     {},
     methods,
-    firebaser(paths.users, ['add'])
+    firebaser(paths.users, ['get', 'add'])
   )
 }

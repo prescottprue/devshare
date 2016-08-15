@@ -55,6 +55,9 @@ export const logout = () =>
       return Promise.reject(error)
     })
 
+export const createUserAccount = (newUser) =>
+  set([paths.users, newUser.username])(newUser)
+
 /**
 * @description Signup and login as a new user
 * @param {Object} userInfo - Object containing signup data
@@ -75,17 +78,15 @@ export const signup = ({ username, email, password, project, name }, projectName
 
   return firebase.auth()
     .createUserWithEmailAndPassword(email, password)
-    .then(({ providerData, uid }) => {
-      const newUser = Object.assign({}, { username, email, name, providerData })
-      return set([paths.users, uid])(newUser)
-          .then(() => !projectName ? newUser
-              : project('anon', projectName)
-                  .clone(username, projectName)
-                  .then((cloneRes) => newUser)
-                  .catch((error) => Promise.reject(error))
-          )
-          .catch((error) => Promise.reject(error))
-    })
+    .then(({ providerData, uid }) =>
+      createUserAccount({ username, email, name, providerData, uid })
+        .then((newUser) => !projectName ? newUser
+          : project('anon', projectName)
+              .clone(username, projectName)
+              .then((cloneRes) => newUser)
+              .catch((error) => Promise.reject(error))
+        )
+      )
     .catch((error) => Promise.reject(error))
 }
 

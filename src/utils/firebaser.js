@@ -52,20 +52,32 @@ export const get = (relativePath) => () =>
  * @param {Array|String} relativePath - Releative
  * @return {Promise}
  */
-export const set = (relativePath) => (object) =>
-  createFirebaseRef(relativePath)()
-    .set(object)
+export const set = (relativePath) => (object, priority) => {
+  return createFirebaseRef(relativePath)()[priority ? 'setWithPriority' : 'set'](object)
     .then((data) => data ? data.val() : object)
+}
 
+/**
+ * @description Set data to a Firebase location based on array or string path
+ * @param {Array|String} relativePath - Releative
+ * @return {Promise}
+ */
+export const setWithPriority = (relativePath) => (object, priority) =>
+  createFirebaseRef(relativePath)()
+    .setWithPriority(object)
+    .then((data) => data ? data.val() : object)
 /**
  * @description Push data to a Firebase location based on array or string path
  * @param {Array|String} relativePath - Releative
  * @return {Promise}
  */
-export const push = (relativePath) => (object) => {
+export const push = (relativePath) => (object, priority) => {
   const pushRef = createFirebaseRef(relativePath)().push()
-  return pushRef.set(object)
-  .then((data) => data ? Object.assign({}, { key: pushRef.key }, data) : Object.assign(object, { key: pushRef.key }))
+  return pushRef[priority ? 'setWithPriority' : 'set'](object)
+    .then((data) => data
+      ? Object.assign({}, { key: pushRef.key }, data)
+      : Object.assign(object, { key: pushRef.key })
+    )
 }
 
 export const add = push
@@ -104,10 +116,11 @@ export const sync = (relativePath) => (callback) =>
  * @param {Array|String} relativePath - Path from Firebase root
  * @return {Promise}
  */
-export const search = (relativePath) => (callback) =>
+export const search = (relativePath) => (q) =>
   createFirebaseRef(relativePath)()
     .orderByChild({})
-    .on('value', (data) => callback(data.val()))
+    .once('value')
+    .then((data) => data.val())
 
 /**
  * @description Resolve the JSON value a Firebase location's child
