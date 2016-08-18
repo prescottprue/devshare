@@ -2,7 +2,9 @@ export default {
   paths: {
     files: 'files',
     users: 'users',
-    projects: 'projects'
+    projects: 'projects',
+    projectNames: 'projectNames',
+    usernames: 'usernames'
   },
   firebase: {
     apiKey: 'AIzaSyBWtt-UVc9I7ZMADqn3-WyoJB-L2HQrRhk',

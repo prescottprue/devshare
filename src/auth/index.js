@@ -1,7 +1,7 @@
 import { isObject, isArray, capitalize } from 'lodash'
 import firebase from 'firebase'
 import project from '../project'
-import { set } from '../utils/firebaser'
+import { set, update } from '../utils/firebaser'
 import { paths } from '../config'
 
 /**
@@ -46,26 +46,38 @@ export const login = (email, password, projectName) => {
 }
 
 /**
-* @description Logout of currently logged in user
-*/
+ * @description Logout of currently logged in user
+ */
 export const logout = () =>
   firebase.auth().signOut()
     .catch((error) => {
       console.error('error logging out of firebase', error)
       return Promise.reject(error)
     })
-
+/**
+ * @description Create new user account
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.email - Email of new user
+ */
 export const createUserAccount = (newUser) =>
-  set([paths.users, newUser.username])(newUser)
+  set([paths.users, newUser.uid])(newUser)
+    .then(() =>
+      set([paths.usernames, newUser.username])(newUser.uid)
+        .then(() => newUser)
+    )
+    .catch(error => Promise.reject(error))
 
 /**
-* @description Signup and login as a new user
-* @param {Object} userInfo - Object containing signup data
-* @param {String} userInfo.username - Username of new user
-* @param {String} userInfo.email - Email of new user
-* @param {String} userInfo.password - Password of new user
-* @param {String} userInfo.project - Name of project to clone to account after signup (optional)
-*/
+ * @description Signup and login as a new user
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.email - Email of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.password - Password of new user
+ * @param {String} userInfo.project - Name of project to clone to account after signup (optional)
+ */
 export const signup = ({ username, email, password, project, name }, projectName) => {
   if (!email || !username || !password) {
     return Promise.reject('Email and Password are required')
@@ -111,9 +123,43 @@ export const authWithProvider = (providerName) => {
 
 export const getCurrentUser = () => firebase.auth().currentUser
 
+/**
+ * @description Update user profile in firebase auuth and users path
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.email - Email of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ */
+export const updateUser = (newUserData) => {
+  const currentUser = getCurrentUser()
+  return currentUser.updateProfile(newUserData)
+    .then(() =>
+      update([paths.users, currentUser.uid])(newUserData)
+        .then(() => currentUser)
+    )
+    .catch(error => Promise.reject(error))
+}
+
+/**
+ * @description Update user email
+ * @param {String} email - New email for current user
+ */
+export const updateEmail = (newEmail) => {
+  const currentUser = getCurrentUser()
+  return currentUser
+    .updateEmail(newEmail)
+    .then(() =>
+      update([paths.users, currentUser.uid])({ email: newEmail })
+        .then(() => currentUser)
+      )
+    .catch(error => Promise.reject(error))
+}
+
 export default {
   authWithProvider,
   getCurrentUser,
+  updateUser,
+  updateEmail,
   login,
   logout,
   signup

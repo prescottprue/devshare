@@ -1,4 +1,4 @@
-import firebaser, { update, remove, get } from '../utils/firebaser'
+import firebaser, { update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
@@ -16,9 +16,6 @@ export default (owner, projectname) => {
   const name = `${paths.projects}/${owner}/${projectname}`
 
   const methods = {
-    get: () =>
-      get([paths.projects, owner, projectname])(),
-
     rename: (newProjectname) =>
       update(name)({ name: newProjectname }),
 

@@ -1,26 +1,34 @@
 import { paths } from '../config'
-import firebaser, { createFirebaseRef } from '../utils/firebaser'
+import { get, update, remove } from '../utils/firebaser'
+
+export const getByUsername = (username) =>
+  !username
+  ? Promise.reject('Username is required to get user')
+  : get([paths.usernames, username])()
+    .then((uid) => !uid
+      ? Promise.reject('User not found')
+      : get([paths.users, uid])().then(user => Object.assign({}, user, { uid }))
+    )
 
 export default (username) => {
   const methods = {
     // TODO: Firebase function to include username in token (this query won't be needed)
-    getByUid: (uid) =>
-      createFirebaseRef(paths.users)()
-        .orderByChild('uid')
-        .equalTo(uid)
-        .limitToFirst(1)
-        .once('value')
-        .then((data) => {
-          if (!data || !data.val()) return Promise.reject('User not found')
-          const key = Object.keys(data.val())[0]
-          const userData = data.val()[key]
-          return Object.assign({}, userData, { key })
-        })
+    get: () => getByUsername(username),
+    update: (newUserData) =>
+      getByUsername(username)
+        .then(user =>
+          update([paths.users, user.uid])(newUserData)
+            .then(() =>
+              Object.assign({}, user, newUserData)
+            )
+        ),
+    remove: () =>
+      getByUsername(username)
+        .then(user => remove([paths.users, user.uid])())
   }
 
   return Object.assign(
     {},
-    firebaser(`${paths.users}/${username}`, ['get', 'update', 'remove']),
     methods
   )
 }
