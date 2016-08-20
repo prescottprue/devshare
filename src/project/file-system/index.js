@@ -1,7 +1,7 @@
 import file from './file'
 import entity from './entity'
 import folder from './folder'
-import { filesRoot, highlightColors, paths } from '../../config'
+import { highlightColors, paths } from '../../config'
 import { randomIntBetween } from '../../utils'
 import { zipFileSystem } from '../../utils/zipper'
 import firebaser, {
@@ -10,9 +10,8 @@ import firebaser, {
   } from '../../utils/firebaser'
 
 export default (owner, projectname) => {
-  const relativePath = [paths, owner, projectname]
+  const relativePath = [paths.files, owner, projectname]
   const projectUrl = `${paths.files}/projects/${owner}/${projectname}`
-
   const methods = {
     firebaseUrl: () =>
       createFirebaseUrl(relativePath)(),
@@ -29,7 +28,7 @@ export default (owner, projectname) => {
     clone: (newOwner, newName) =>
       get(relativePath)()
         .then((files) =>
-          set([filesRoot, newOwner, newName || projectname])(files)
+          set([paths.files, newOwner, newName || projectname])(files)
             .then(() => files)
         ),
 

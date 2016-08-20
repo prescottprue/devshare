@@ -23,3 +23,4 @@ global.window = win
 global.navigator = win.navigator
 
 window.sessionStorage = require('./utils/storageMock')()
+require('../src').init();

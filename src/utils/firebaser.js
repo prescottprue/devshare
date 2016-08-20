@@ -35,7 +35,7 @@ export const createFirebaseUrl = (relativePath) => () => {
  * @return {Promise}
  */
 export const createFirebaseRef = (relativePath) => () =>
-  new firebase.database().ref(createFirebaseUrl(relativePath)()) // eslint-disable-line new-cap
+  firebase.database().ref(createFirebaseUrl(relativePath)()) // eslint-disable-line new-cap
 
 /**
  * @description Get a location on Firebase

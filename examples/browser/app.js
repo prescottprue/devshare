@@ -3,8 +3,6 @@
 let devshare = window.Devshare.default
 console.log('Devshare', devshare)
 
-devshare.init()
-
 setStatus()
 
 function login () {
@@ -72,7 +70,7 @@ function setStatus () {
   var statusEl = document.getElementById('status')
   var logoutButton = document.getElementById('logout-btn')
 
-  if (devshare.getCurrentUser()) {
+  if (devshare.getCurrentUser() !== null) {
     statusEl.innerHTML = 'True'
     statusEl.style.color = 'green'
     // statusEl.className = statusEl.className ? ' status-loggedIn' : 'status-loggedIn'

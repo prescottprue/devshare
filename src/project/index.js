@@ -1,4 +1,4 @@
-import firebaser, { update, remove } from '../utils/firebaser'
+import { get, update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
@@ -15,12 +15,29 @@ export default (owner, projectname) => {
 
   const name = `${paths.projects}/${owner}/${projectname}`
 
+  const getProject = () =>
+    get([paths.usernames, owner])()
+      .then((uid) => !uid
+        ? Promise.reject('User not found.')
+        : get([paths.projects, projectname])()
+          .then((project) => !project
+            ? Promise.reject('Project not found.')
+            : project
+          )
+        )
   const methods = {
+    get: getProject,
+
     rename: (newProjectname) =>
       update(name)({ name: newProjectname }),
 
-    addCollaborator: (username) =>
-      update(`${name}/collaborators/${username}`)(),
+    // addCollaborator: (username) =>
+    //   get([paths.usernames, username])
+    //     .then((uid) =>
+    //       project().then((project) =>
+    //         update([paths.projects, project.name, ]).update({ collaborators: [...project.collaborators, uid] })
+    //       )
+    //     ),
 
     addCollaborators: (collaborators) =>
       update(`${name}/collaborators`)(collaborators),
@@ -49,7 +66,6 @@ export default (owner, projectname) => {
 
   return Object.assign(
     {},
-    firebaser(name, ['get', 'remove']),
     methods,
     subModels
   )

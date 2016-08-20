@@ -1,13 +1,17 @@
 import { paths } from '../config'
-import { get, update, remove } from '../utils/firebaser'
+import { get, update, remove, createFirebaseRef } from '../utils/firebaser'
 
 export const getByUsername = (username) =>
   !username
   ? Promise.reject('Username is required to get user')
   : get([paths.usernames, username])()
-    .then((uid) => !uid
-      ? Promise.reject('User not found')
-      : get([paths.users, uid])().then(user => Object.assign({}, user, { uid }))
+      .then((uid) => !uid
+        ? Promise.reject('User not found.')
+        : get([paths.users, uid])()
+            .then(user => !user
+              ? Promise.reject('User not found.')
+              : Object.assign({}, user, { uid })
+            )
     )
 
 export default (username) => {
@@ -23,8 +27,23 @@ export default (username) => {
             )
         ),
     remove: () =>
-      getByUsername(username)
-        .then(user => remove([paths.users, user.uid])())
+      get([paths.usernames, username])
+        .then(uid =>
+          Promise.all([
+            remove([paths.users, uid]),
+            // Remove all Projects based on projects names list
+            createFirebaseRef([paths.projectNames, uid])
+              .then((ref) => {
+                let promises = []
+                ref.forEach((projectIdSnap) => {
+                  promises.push(remove([paths.projects, projectIdSnap.val()]))
+                })
+                return Promise.all(promises)
+                  .then(() => ref.remove())
+              }),
+            remove([paths.usernames, username])
+          ])
+        )
   }
 
   return Object.assign(
