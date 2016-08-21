@@ -36,7 +36,7 @@ export default (username) => {
         username || currentUser.uid,
         project.name
       ])().then(loadedProject =>
-          // Push new project to projects list if it does not already exist in projectNamesList
+          // Push new project to projects list if it does not already exist
           (loadedProject && loadedProject.name === project.name)
             ? Promise.reject(`Error adding project: User already has a project named ${project.name}`)
             : set([paths.projects, username || currentUser.uid, project.name])(project).then((newProject) =>

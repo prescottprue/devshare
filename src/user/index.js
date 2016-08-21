@@ -1,23 +1,28 @@
 import { paths } from '../config'
 import { get, update, remove, createFirebaseRef } from '../utils/firebaser'
 
+export const getUid = (username) => !username
+  ? Promise.reject('Username is required to get Uid')
+  : get([paths.usernames, username])()
+    .then(uid => uid || Promise.reject(`Not Found. ${username} is not a valid username.`))
+
 export const getByUsername = (username) =>
   !username
   ? Promise.reject('Username is required to get user')
-  : get([paths.usernames, username])()
-      .then((uid) => !uid
-        ? Promise.reject('User not found.')
-        : get([paths.users, uid])()
-            .then(user => !user
-              ? Promise.reject('User not found.')
-              : Object.assign({}, user, { uid })
-            )
-    )
+  : getUid(username)
+      .then(uid =>
+        get([paths.users, uid])()
+          .then(user => !user
+            ? Promise.reject('User not found.')
+            : Object.assign({}, user, { uid })
+          )
+      )
 
 export default (username) => {
   const methods = {
     // TODO: Firebase function to include username in token (this query won't be needed)
     get: () => getByUsername(username),
+
     update: (newUserData) =>
       getByUsername(username)
         .then(user =>
@@ -26,6 +31,7 @@ export default (username) => {
               Object.assign({}, user, newUserData)
             )
         ),
+
     remove: () =>
       get([paths.usernames, username])
         .then(uid =>

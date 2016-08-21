@@ -25,5 +25,5 @@ export const projects = _projects
 export const user = _user
 export const users = _users
 export const auth = _auth
-export const { authWithProvider, login, logout, signup } = _auth
+export const { authWithProvider, login, logout, signup, getCurrentUser } = _auth
 export { init }
