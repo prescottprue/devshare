@@ -1,6 +1,6 @@
 {
   "name": "devshare",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Library to communicate with tessellate application building/managing service.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",

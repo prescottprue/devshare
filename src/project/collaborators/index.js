@@ -12,12 +12,28 @@ export default (owner, projectname) => {
       .then(uids =>
         createFirebaseRef([paths.projects, uids[0], projectname, 'collaborators'])()
           .once('value')
-          .then(collaboratorsSnap => {
-            if (collaboratorsSnap.val()) {
+          .then(collabsSnap => {
+            if (collabsSnap.val()) {
               // TODO: Make sure user is not already a collaborator
-              return collaboratorsSnap.ref.child(Object.keys(collaboratorsSnap.val()).length).set(uids[1])
+              return collabsSnap.ref.child(Object.keys(collabsSnap.val()).length).set(uids[1])
             }
-            return collaboratorsSnap.ref.set([uids[1]])
+            return collabsSnap.ref.set([uids[1]])
+          })
+      ),
+
+    remove: (removeUsername) =>
+      Promise.all([getUid(owner), getUid(removeUsername)])
+      .then(uids =>
+        createFirebaseRef([paths.projects, uids[0], projectname, 'collaborators'])()
+          .once('value')
+          .then(collabsSnap => {
+            if (!collabsSnap.hasChildren()) {
+              return Promise.reject('Can not remove user from project collaborators')
+            }
+            if (collabsSnap.val().indexOf(uids[1]) === -1) {
+              return Promise.reject('User is not a collaborator')
+            }
+            return collabsSnap.ref.set(collabsSnap.val().filter(id => id !== uids[1]))
           })
       )
   }
