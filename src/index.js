@@ -4,14 +4,15 @@ import _users from './users'
 import _user from './user'
 import _auth from './auth'
 import { init } from './utils/firebaser'
-
-init()
+import firebase from 'firebase'
 
 const devshare = {
   projects: _projects,
   project: _project,
   users: _users,
-  user: _user
+  user: _user,
+  init,
+  firebase
 }
 
 export default Object.assign(

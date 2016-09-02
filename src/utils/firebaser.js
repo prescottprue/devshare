@@ -12,6 +12,7 @@ export const init = () => {
   } catch (err) {
     console.warn('You only need to initialize Firebase once', JSON.stringify(err))
   }
+  return firebase
 }
 
 /**
