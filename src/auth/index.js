@@ -1,8 +1,79 @@
-import { isObject, isArray, capitalize } from 'lodash'
+import { capitalize } from 'lodash'
 import firebase from 'firebase'
 import project from '../project'
 import { set, update } from '../utils/firebaser'
 import { paths } from '../config'
+
+/**
+ * @description Get correct login method and params order based on provided credentials
+ * @param {Object} credentials - Login credentials
+ * @param {String} credentials.email - Email to login with (only needed for email login)
+ * @param {String} credentials.password - Password to login with (only needed for email login)
+ * @param {String} credentials.provider - Provider name such as google, twitter
+ * @param {String} credentials.type - Popup or redirect (only needed for 3rd party provider login)
+ * @param {String} credentials.token - Custom or provider token
+ */
+const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
+  if (provider) {
+    if (token) {
+      return {
+        method: 'signInWithCredential',
+        params: [ provider, token ]
+      }
+    }
+    const authProvider = new firebase.auth[`${capitalize(provider)}AuthProvider`]
+    authProvider.addScope('email')
+    if (type === 'popup') {
+      return {
+        method: 'signInWithPopup',
+        params: [ authProvider ]
+      }
+    }
+    return {
+      method: 'signInWithRedirect',
+      params: [ authProvider ]
+    }
+  }
+  if (token) {
+    return {
+      method: 'signInWithCustomToken',
+      params: [ token ]
+    }
+  }
+  return {
+    method: 'signInWithEmailAndPassword',
+    params: [ email, password ]
+  }
+}
+
+const profileFromUserData = ({ email, username, avatarUrl, providerData }) => {
+  const data = providerData && providerData[0]
+  if (!username) username = data.email.split('@')[0]
+  if (data.photoURL) {
+    avatarUrl = data.photoURL
+  }
+  const profile = { email, username }
+  if (providerData) profile.providerData = providerData
+  if (avatarUrl) profile.avatarUrl = avatarUrl
+  return profile
+}
+
+/**
+ * @description Create new user account
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.email - Email of new user
+ */
+export const createUserProfile = (newUser) => {
+  const profile = profileFromUserData(newUser)
+  // TODO: Verify that username does not already exist
+  return set([paths.users, newUser.uid])(profile)
+      .then(() =>
+        set([paths.usernames, profile.username])(newUser.uid)
+          .then(() => newUser)
+      )
+}
 
 /**
 * @description Login/Authenticate as a user
@@ -11,37 +82,32 @@ import { paths } from '../config'
 * @param {String} password - Password of user to login as
 * @param {String} project - Name of project to clone to account after login (optional)
 */
-export const login = (email, password, projectName) => {
-  if (!email) {
-    return Promise.reject({ message: 'Username or Email is required to login ' })
+export const login = (credentials, projectName) => {
+  if (!credentials.email && !credentials.username && !credentials.provider) {
+    return Promise.reject({ message: 'Username/Email or Provider is required to login ' })
   }
 
-  // First param as and object containing email and password
-  if (isObject(email) && email.password) {
-    password = email.password
-    email = email.email
-    if (email.project) projectName = email.project
-  }
-
-  // Handle Array as first param
-  if (isArray(email)) {
-    if (email.length > 2) {
-      projectName = email[2]
-    }
-    password = email[1]
-    email = email[0]
-  }
-
+  const { method, params } = getLoginMethodAndParams(credentials)
+  // TODO: Username login
+  // if (method === 'signInWithEmailAndPassword' && !credentials.email) {
+  //   devshare.firebase.database().ref().child(devshare._.config.usernames)
+  // }
   // if (isObject(email) && email.provider) return authWithProvider(email.provider)
-  return firebase.auth().signInWithEmailAndPassword(email, password)
-    .then((response) => {
-      const { user } = response
-      return !projectName ? response
-        : project('anon', projectName)
-            .clone(user.username, projectName)
-            .then((cloneRes) => response)
-            .catch((error) => Object.assign(user, { error }))
+  return firebase.auth()[method](...params)
+    .then((userData) => {
+      console.log('userdata', userData)
+      // For email auth return uid (createUser is used for creating a profile)
+      return userData.email
+        ? userData
+        : createUserProfile(userData.user)
     })
+    .then(user => !projectName
+      ? user
+      : project('anon', projectName)
+          .clone(user.username, projectName)
+          .then((cloneRes) => user)
+          .catch((error) => Object.assign(user, { error }))
+      )
     .catch((error) => Promise.reject(error))
 }
 
@@ -54,20 +120,6 @@ export const logout = () =>
       console.error('error logging out of firebase', error)
       return Promise.reject(error)
     })
-/**
- * @description Create new user account
- * @param {Object} userInfo - Object containing signup data
- * @param {String} userInfo.username - Username of new user
- * @param {String} userInfo.displayName - Display name of new user
- * @param {String} userInfo.email - Email of new user
- */
-export const createUserAccount = (newUser) =>
-  set([paths.users, newUser.uid])(newUser)
-    .then(() =>
-      set([paths.usernames, newUser.username])(newUser.uid)
-        .then(() => newUser)
-    )
-    .catch(error => Promise.reject(error))
 
 /**
  * @description Signup and login as a new user
@@ -88,10 +140,12 @@ export const signup = ({ username, email, password, project, name }, projectName
   // Set name to username if not provided
   if (!name) name = username
 
+  // TODO: Handle external provider signup (call login)
+  // TODO: Login before creating user profile
   return firebase.auth()
     .createUserWithEmailAndPassword(email, password)
     .then(({ providerData, uid }) =>
-      createUserAccount({ username, email, name, providerData, uid })
+      createUserProfile({ username, email, name, providerData, uid })
         .then((newUser) => !projectName ? newUser
           : project('anon', projectName)
               .clone(username, projectName)
@@ -100,25 +154,6 @@ export const signup = ({ username, email, password, project, name }, projectName
         )
       )
     .catch((error) => Promise.reject(error))
-}
-
-/**
- * @description Authenticate using a 3rd party provider
- * @param {String} provider - Oauth Provider (google, github, facebook)
- */
-export const authWithProvider = (providerName) => {
-  const providerMethod = `${capitalize(providerName)}AuthProvider`
-  const provider = new firebase.auth[providerMethod]()
-  return firebase.auth().signInWithPopup(provider)
-    .then((result) => {
-      const accessToken = result.credential.accessToken
-      const { user } = result
-      console.log('auth with popup', { accessToken, user })
-    })
-    .catch((error) => {
-      console.error('Error signing in with popup', error)
-      return Promise.reject(error)
-    })
 }
 
 export const getCurrentUser = () => firebase.auth().currentUser
@@ -156,7 +191,6 @@ export const updateEmail = (newEmail) => {
 }
 
 export default {
-  authWithProvider,
   getCurrentUser,
   updateUser,
   updateEmail,
