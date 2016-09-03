@@ -1,7 +1,7 @@
 import { capitalize } from 'lodash'
 import firebase from 'firebase'
 import project from '../project'
-import { set, update } from '../utils/firebaser'
+import { set, get, update } from '../utils/firebaser'
 import { paths } from '../config'
 
 /**
@@ -66,13 +66,17 @@ const profileFromUserData = ({ email, username, avatarUrl, providerData }) => {
  * @param {String} userInfo.email - Email of new user
  */
 export const createUserProfile = (newUser) => {
-  const profile = profileFromUserData(newUser)
   // TODO: Verify that username does not already exist
-  return set([paths.users, newUser.uid])(profile)
-      .then(() =>
+  const profile = profileFromUserData(newUser)
+  return get([paths.users, newUser.uid])()
+    .then((loadedProfile) =>
+      // Only write profile if it does not already exist
+      loadedProfile || Promise.all([
+        set([paths.users, newUser.uid])(profile),
         set([paths.usernames, profile.username])(newUser.uid)
-          .then(() => newUser)
-      )
+      ])
+      .then(() => profile)
+    )
 }
 
 /**
@@ -92,23 +96,22 @@ export const login = (credentials, projectName) => {
   // if (method === 'signInWithEmailAndPassword' && !credentials.email) {
   //   devshare.firebase.database().ref().child(devshare._.config.usernames)
   // }
-  // if (isObject(email) && email.provider) return authWithProvider(email.provider)
   return firebase.auth()[method](...params)
-    .then((userData) => {
-      console.log('userdata', userData)
+    .then((userData) =>
       // For email auth return uid (createUser is used for creating a profile)
-      return userData.email
+      userData.email
         ? userData
         : createUserProfile(userData.user)
-    })
-    .then(user => !projectName
-      ? user
-      : project('anon', projectName)
-          .clone(user.username, projectName)
-          .then((cloneRes) => user)
-          .catch((error) => Object.assign(user, { error }))
-      )
-    .catch((error) => Promise.reject(error))
+    )
+    .then(user =>
+      // If project name is included, clone project
+      !projectName
+        ? user
+        : project('anon', projectName)
+            .clone(user.username, projectName)
+            .then((cloneRes) => user)
+            .catch((error) => Object.assign(user, { error }))
+    )
 }
 
 /**
