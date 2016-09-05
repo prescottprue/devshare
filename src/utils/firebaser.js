@@ -6,9 +6,9 @@ import { firebase as firebaseConfig } from '../config'
 /**
  * @description Initialize firebase application
  */
-export const init = () => {
+export const init = ({env}) => {
   try {
-    firebase.initializeApp(firebaseConfig)
+    firebase.initializeApp(firebaseConfig[env] || firebaseConfig.prod)
   } catch (err) {
     console.warn('You only need to initialize Firebase once', JSON.stringify(err))
   }

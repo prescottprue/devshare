@@ -27,19 +27,23 @@ export default (username) => {
         console.error('You must be logged in to create a project')
         return Promise.reject({ message: 'You must be logged in to create a project' })
       }
-
-      if (!project.owner) project.owner = currentUser.uid
-
+      // TODO: Handle project owner being username or uid
+      // TODO: Handle project owner being object
+      // TODO: Handle project owner not being provided
+      // if (!project.owner) {
+      //   get([paths.projects, currentUser.uid, 'username'])().then(username => )
+      // }
       // Check for existance of project name
+
       return get([
         paths.projects,
-        username || currentUser.uid,
+        username || project.owner,
         project.name
       ])().then(loadedProject =>
           // Push new project to projects list if it does not already exist
           (loadedProject && loadedProject.name === project.name)
             ? Promise.reject(`Error adding project: User already has a project named ${project.name}`)
-            : set([paths.projects, username || currentUser.uid, project.name])(project).then((newProject) =>
+            : set([paths.projects, username || project.owner, project.name])(project).then((newProject) =>
                 // get list of projects within user
                 get([
                   paths.users,

@@ -10,7 +10,9 @@ export default (owner, projectname) => {
   // Handle object as first param
   if (isObject(owner) && owner.owner) {
     projectname = owner.name
-    owner = owner.owner.username
+    owner = (isObject(owner.owner) && owner.owner.username)
+      ? owner.owner.username
+      : owner.owner
   }
 
   const name = `${paths.projects}/${owner}/${projectname}`

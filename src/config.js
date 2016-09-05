@@ -7,11 +7,18 @@ export default {
     usernames: 'usernames'
   },
   firebase: {
-    userProfile: 'users',
-    apiKey: 'AIzaSyBQw-StxUsUhoQwZqaawegUFO7YOyG_HDA',
-    authDomain: 'devshare-1.firebaseapp.com',
-    databaseURL: 'https://devshare-1.firebaseio.com',
-    storageBucket: 'devshare-1.appspot.com'
+    prod: {
+      apiKey: 'AIzaSyBQw-StxUsUhoQwZqaawegUFO7YOyG_HDA',
+      authDomain: 'devshare-1.firebaseapp.com',
+      databaseURL: 'https://devshare-1.firebaseio.com',
+      storageBucket: 'devshare-1.appspot.com'
+    },
+    dev: {
+      apiKey: 'AIzaSyBWtt-UVc9I7ZMADqn3-WyoJB-L2HQrRhk',
+      authDomain: 'pruvit-968.firebaseapp.com',
+      databaseURL: 'https://pruvit-968.firebaseio.com',
+      storageBucket: 'pruvit-968.appspot.com'
+    }
   },
   highlightColors: [
     '#FF0000', '#FF00F1', '#F1C40F',

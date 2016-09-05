@@ -153,10 +153,8 @@ export const signup = ({ username, email, password, project, name }, projectName
           : project('anon', projectName)
               .clone(username, projectName)
               .then((cloneRes) => newUser)
-              .catch((error) => Promise.reject(error))
         )
-      )
-    .catch((error) => Promise.reject(error))
+    )
 }
 
 export const getCurrentUser = () => firebase.auth().currentUser
