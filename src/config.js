@@ -14,10 +14,10 @@ export default {
       storageBucket: 'devshare-1.appspot.com'
     },
     dev: {
-      apiKey: 'AIzaSyBWtt-UVc9I7ZMADqn3-WyoJB-L2HQrRhk',
-      authDomain: 'pruvit-968.firebaseapp.com',
-      databaseURL: 'https://pruvit-968.firebaseio.com',
-      storageBucket: 'pruvit-968.appspot.com'
+      apiKey: 'AIzaSyBuwR21cO0lMzMr_T-Dl_jG1dsORXZ1fwY',
+      authDomain: 'devshare-stg.firebaseapp.com',
+      databaseURL: 'https://devshare-stg.firebaseio.com',
+      storageBucket: 'devshare-stg.appspot.com'
     }
   },
   highlightColors: [
