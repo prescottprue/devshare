@@ -11,6 +11,7 @@ export default (projectPath, entityPath, entityType) => {
   const path = pathArray.join('/')
   const name = pathArray[pathArray.length - 1]
   const fullPath = projectPath.concat(pathArray)
+  // console.log('project path:', { projectPath, fullPath })
 
   const methods = {
     firebaseUrl: () =>
@@ -20,9 +21,14 @@ export default (projectPath, entityPath, entityType) => {
       createFirebaseRef(fullPath)(),
 
     add: (original) =>
-      original
-      ? set(fullPath)({ meta: { name, path, entityType, original } })
-      : set(fullPath)({ meta: { name, path, entityType } }),
+      // Check to see if file with matching name already exists
+      get(fullPath)()
+        .then(file => file
+          ? Promise.reject(new Error('File with a matching name already exists'))
+          : original
+            ? set(fullPath)({ meta: { name, path, entityType, original } })
+            : set(fullPath)({ meta: { name, path, entityType } })
+        ),
 
     getMeta: () =>
       get(fullPath)().then((entity) => entity.meta),

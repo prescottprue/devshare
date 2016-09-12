@@ -41,7 +41,7 @@ export const createZip = (relativePath, directory) => {
     )
 }
 
-/*
+/**
  * @description Create a zip file with all of the files within a project's file system
  * Note: Firepad is used to get the file's contents for zipping however,
  * if Firepad is not available, the ZIP file will be requested from the server
