@@ -2,6 +2,7 @@ export default {
   paths: {
     files: 'files',
     users: 'users',
+    uids: 'uids',
     projects: 'projects',
     projectNames: 'projectNames',
     usernames: 'usernames'

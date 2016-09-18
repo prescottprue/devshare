@@ -46,7 +46,7 @@ const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
   }
 }
 
-const profileFromUserData = ({ email, username, avatarUrl, providerData }) => {
+const profileFromUserData = ({ email, username, avatarUrl, providerData, uid }) => {
   const data = providerData && providerData[0]
   if (!username) username = data.email.split('@')[0]
   if (data.photoURL) {
@@ -55,6 +55,7 @@ const profileFromUserData = ({ email, username, avatarUrl, providerData }) => {
   const profile = { email, username }
   if (providerData) profile.providerData = providerData
   if (avatarUrl) profile.avatarUrl = avatarUrl
+  profile.uid = uid
   return profile
 }
 
@@ -73,7 +74,8 @@ export const createUserProfile = (newUser) => {
       // Only write profile if it does not already exist
       loadedProfile || Promise.all([
         set([paths.users, newUser.uid])(profile),
-        set([paths.usernames, profile.username])(newUser.uid)
+        set([paths.usernames, profile.username])(newUser.uid),
+        set([paths.uids, newUser.uid])(profile.username)
       ])
       .then(() => profile)
     )
@@ -119,10 +121,6 @@ export const login = (credentials, projectName) => {
  */
 export const logout = () =>
   firebase.auth().signOut()
-    .catch((error) => {
-      console.error('error logging out of firebase', error)
-      return Promise.reject(error)
-    })
 
 /**
  * @description Signup and login as a new user
