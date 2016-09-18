@@ -117,15 +117,12 @@ export const sync = (relativePath) => (callback) =>
  * @param {Array|String} relativePath - Path from Firebase root
  * @return {Promise}
  */
-export const search = (relativePath) => (param, q) => {
-  console.log('search called, ', { param, q })
-  return createFirebaseRef(relativePath)()
+export const search = (relativePath) => (param, q) =>
+  createFirebaseRef(relativePath)()
     .orderByChild(param)
     .startAt(q)
-    .endAt(q)
     .once('value')
     .then((data) => data.val())
-}
 
 /**
  * @description Resolve the JSON value a Firebase location's child
