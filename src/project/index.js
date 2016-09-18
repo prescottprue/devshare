@@ -1,4 +1,4 @@
-import { get, update, remove } from '../utils/firebaser'
+import { set, get, update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
@@ -19,27 +19,32 @@ export default (owner, projectname) => {
 
   const getProject = () =>
     get([paths.usernames, owner])()
-      .then((uid) => !uid
-        ? Promise.reject('User not found.')
-        : get([paths.projects, projectname])()
-          .then((project) => !project
-            ? Promise.reject('Project not found.')
-            : project
-          )
-        )
+     .then((uid) => !uid
+       ? Promise.reject(`User with username: ${owner} does not exist.`)
+       : get([paths.projects, projectname])()
+         .then((project) => !project
+           ? Promise.reject(`Project with name: ${projectname} does not exist.`)
+           : project
+         )
+       )
+
   const methods = {
     get: getProject,
 
     rename: (newProjectname) =>
       update(name)({ name: newProjectname }),
 
-    // addCollaborator: (username) =>
-    //   get([paths.usernames, username])
-    //     .then((uid) =>
-    //       project().then((project) =>
-    //         update([paths.projects, project.name, ]).update({ collaborators: [...project.collaborators, uid] })
-    //       )
-    //     ),
+    addCollaborator: (username) =>
+      get([paths.usernames, username])()
+        .then((uid) =>
+          getProject().then((project) =>
+            !project.collaborators
+              ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
+              : project.collaborators.indexOf(uid) !== -1
+                ? Promise.reject('User is already a collaborator')
+                : set([ paths.projects, owner, projectname, 'collaborators' ])([...project.collaborators, uid])
+          )
+        ),
 
     addCollaborators: (collaborators) =>
       update(`${name}/collaborators`)(collaborators),
