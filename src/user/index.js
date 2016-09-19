@@ -21,8 +21,10 @@ export const getByUsername = (username) =>
 export default (username) => {
   const methods = {
     // TODO: Firebase function to include username in token (this query won't be needed)
-    get: () => getByUsername(username),
-    getFromUid: (uid) => get([paths.users, uid])(),
+    get: () =>
+      getByUsername(username),
+    getFromUid: (uid) =>
+      get([paths.users, uid])(),
     update: (newUserData) =>
       getByUsername(username)
         .then(user =>

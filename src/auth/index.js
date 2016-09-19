@@ -21,7 +21,7 @@ const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
         params: [ provider, token ]
       }
     }
-    const authProvider = new firebase.auth[`${capitalize(provider)}AuthProvider`]
+    const authProvider = new firebase.auth[`${capitalize(provider)}AuthProvider`]()
     authProvider.addScope('email')
     if (type === 'popup') {
       return {
@@ -46,6 +46,16 @@ const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
   }
 }
 
+/**
+ * @description Create new user account
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.email - Email of new user
+ * @param {String} userInfo.avatarUrl - Url of avatar image
+ * @param {String} userInfo.uid - User's uid
+ * @param {Array} userInfo.providerData - Data from external provider accounts
+ */
 const profileFromUserData = ({ email, username, avatarUrl, providerData, uid }) => {
   const data = providerData && providerData[0]
   if (!username) username = data.email.split('@')[0]

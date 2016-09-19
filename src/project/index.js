@@ -33,7 +33,7 @@ export default (owner, projectname) => {
       .then((uid) =>
         getProject().then((project) =>
           !project.collaborators
-            ? set([ paths.projects, owner, projectname, 'collaborators' ])([ { uid, username } ])
+            ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
             : project.collaborators.indexOf(uid) !== -1
               ? Promise.reject('User is already a collaborator')
               : set([
@@ -43,7 +43,7 @@ export default (owner, projectname) => {
                 'collaborators'
               ])([
                 ...project.collaborators,
-                { uid, username }
+                uid
               ])
         )
       )
