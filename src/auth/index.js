@@ -84,8 +84,8 @@ export const createUserProfile = (newUser) => {
       // Only write profile if it does not already exist
       loadedProfile || Promise.all([
         set([paths.users, newUser.uid])(profile),
-        set([paths.usernames, profile.username])(newUser.uid),
-        set([paths.uids, newUser.uid])(profile.username)
+        set([paths.usernames, newUser.uid])(profile.username),
+        set([paths.uids, profile.username])(newUser.uid)
       ])
       .then(() => profile)
     )

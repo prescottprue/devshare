@@ -60,6 +60,12 @@ function addProject () {
     .then(res => console.log('project:', res))
 }
 
+function downloadZip () {
+  devshare.project('prescottprue', 'diuy')
+    .download()
+    .then(res => console.log('zip path:', res))
+}
+
 function cloneProject () {
   devshare.project('anon', '133963')
     .clone('scott', 'copiedOver')
