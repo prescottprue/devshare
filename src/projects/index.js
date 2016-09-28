@@ -16,9 +16,15 @@ export default (username) => {
     add: (project) => {
       if (!project.name) return Promise.reject({ message: 'name is required' })
 
-      if (project.name.match(/[^A-Za-z0-9\-_!,() ]/)) {
+      if (project.name.match(/[/\s]/g)) {
         return Promise.reject({
-          message: 'name may not contain symbols other than: _ ! , ( )'
+          message: 'Name may not contain spaces.'
+        })
+      }
+
+      if (project.name.match(/[.$#\[\]\/]/g)) {
+        return Promise.reject({
+          message: 'Name may contain letters and symbols except for ., $, #, [, ], /.'
         })
       }
 

@@ -1,7 +1,6 @@
 # Devshare Library Todos
 
 ## High Priority
-* [ ] Handle invalid project names (spaces and abnormal characters)
 * [ ] Don't allow project owner to be added as a collaborator
 
 ### Long Term

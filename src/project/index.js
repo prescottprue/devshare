@@ -5,6 +5,7 @@ import projects from '../projects'
 import collaborators from './collaborators'
 import { isObject, remove } from 'lodash'
 import { paths } from '../config'
+import { getCurrentUser } from '../auth'
 
 export default (owner, projectname) => {
   // Handle object as first param
@@ -22,31 +23,32 @@ export default (owner, projectname) => {
      .then((uid) => !uid
        ? Promise.reject(`User with username: ${owner} does not exist.`)
        : get([paths.projects, owner, projectname])()
-         .then((project) => !project
-           ? Promise.reject(`Project with name: ${projectname} does not exist.`)
-           : project
+         .then((project) =>
+            project || Promise.reject(`Project with name: ${paths.projects} ${owner} ${projectname} does not exist.`)
          )
        )
 
   const addCollaborator = (username) =>
     get([paths.usernames, username])()
-      .then((uid) =>
-        getProject().then((project) =>
-          !project.collaborators
-            ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
-            : project.collaborators.indexOf(uid) !== -1
-              ? Promise.reject('User is already a collaborator')
-              : set([
-                paths.projects,
-                owner,
-                projectname,
-                'collaborators'
-              ])([
-                ...project.collaborators,
-                uid
-              ])
+        .then((uid) =>
+          uid === getCurrentUser().uid
+          ? Promise.reject(`${username} is the owner`)
+          : getProject().then((project) =>
+            !project.collaborators
+              ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
+              : project.collaborators.indexOf(uid) !== -1
+                ? Promise.reject('User is already a collaborator')
+                : set([
+                  paths.projects,
+                  owner,
+                  projectname,
+                  'collaborators'
+                ])([
+                  ...project.collaborators,
+                  uid
+                ])
+          )
         )
-      )
 
   const methods = {
     get: getProject,
