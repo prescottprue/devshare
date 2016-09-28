@@ -5,7 +5,7 @@ describe('Config', () => {
   it('exists', () => {
     expect(config).to.be.an.object
   })
-  describe('tessellateRoot', () => {
+  describe.skip('tessellateRoot', () => {
     it('exists', () =>
       config.should.have.property('tessellateRoot')
     )

@@ -17,10 +17,7 @@ export const get = (url) => () =>
 
 export const getFile = (url) => () =>
   fetch(url, { headers: createHeaders() })
-    .then((response) => {
-      console.log('response:', response)
-      return response.blob()
-    })
+    .then((response) => response.blob())
     .then((body) => handleResponse(body))
 
 export const remove = (url) => () =>

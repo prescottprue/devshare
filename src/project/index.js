@@ -1,37 +1,85 @@
-import config from '../config'
-import cruder, { update, remove } from '../utils/cruder'
+import { set, get, update } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
 import collaborators from './collaborators'
-import { isObject } from 'lodash'
+import { isObject, remove } from 'lodash'
+import { paths } from '../config'
 
 export default (owner, projectname) => {
   // Handle object as first param
   if (isObject(owner) && owner.owner) {
     projectname = owner.name
-    owner = owner.owner.username
+    owner = (isObject(owner.owner) && owner.owner.username)
+      ? owner.owner.username
+      : owner.owner
   }
-  const url = `${config.tessellateRoot}/projects/${owner}/${projectname}`
+
+  const name = `${paths.projects}/${owner}/${projectname}`
+
+  const getProject = () =>
+    get([paths.usernames, owner])()
+     .then((uid) => !uid
+       ? Promise.reject(`User with username: ${owner} does not exist.`)
+       : get([paths.projects, owner, projectname])()
+         .then((project) => !project
+           ? Promise.reject(`Project with name: ${projectname} does not exist.`)
+           : project
+         )
+       )
+
+  const addCollaborator = (username) =>
+    get([paths.usernames, username])()
+      .then((uid) =>
+        getProject().then((project) =>
+          !project.collaborators
+            ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
+            : project.collaborators.indexOf(uid) !== -1
+              ? Promise.reject('User is already a collaborator')
+              : set([
+                paths.projects,
+                owner,
+                projectname,
+                'collaborators'
+              ])([
+                ...project.collaborators,
+                uid
+              ])
+        )
+      )
 
   const methods = {
-    rename: (newProjectname) =>
-      update(url)({ name: newProjectname }),
+    get: getProject,
+    addCollaborator,
 
-    addCollaborator: (username) =>
-      update(`${url}/collaborators/${username}`)(),
+    rename: (newProjectname) =>
+      update(name)({ name: newProjectname }),
 
     addCollaborators: (collaborators) =>
-      update(`${url}/collaborators`)(collaborators),
+      Promise.all(
+        collaborators.map(collaborator =>
+          get([paths.usernames, collaborator])()
+            .then(uid => addCollaborator(uid))
+        )
+      ),
 
     removeCollaborator: (username) =>
-      remove(`${url}/collaborators/${username}`)(),
+      get([paths.usernames, username])()
+        .then((uid) =>
+          getProject()
+            .then(({ collaborators }) =>
+              (!collaborators || collaborators.indexOf(uid) !== -1)
+                ? Promise.reject('User is not a collaborator on project')
+                : set(`${name}/collaborators`)(remove(collaborators, uid))
+            )
+      ),
 
     clone: (newOwner, newName) =>
       projects(newOwner)
         .add({ name: newName })
         .then((res) =>
-          fileSystem(owner, projectname).clone(newOwner, newName)
+          fileSystem(owner, projectname)
+            .clone(newOwner, newName)
         ),
 
     download: () =>
@@ -47,7 +95,6 @@ export default (owner, projectname) => {
 
   return Object.assign(
     {},
-    cruder(url, ['get', 'remove']),
     methods,
     subModels
   )

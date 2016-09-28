@@ -9,7 +9,7 @@
     <!-- <script src="https://cdn.firebase.com/libs/firepad/1.3.0/firepad.min.js"></script> -->
 
     <!-- Devshare -->
-    <script src="../../dist/devshare.js"></script>
+    <script src="./dist/devshare.js"></script>
     <style>
       body {
         padding: 0;
@@ -45,18 +45,14 @@
       <div class="Section">
         <h3>Login</h3>
         <div class="inputBoxes">
-          <input type="text" name="email" placeholder="email" id="login-username"><br>
+          <input type="text" name="username" placeholder="username" id="login-username"><br>
           <input type="password" name="password" placeholder="password" id="login-password"><br>
         </div>
         <div>
-          <button onclick="login()">
-            Login
-          </button>
+          <button onclick="login()">Login</button>
         </div>
       </div>
-      <button onclick="authWithProvider('google')">
-          Google Auth
-      </button>
+      <button onclick="authWithProvider('google')">Google Auth</button>
       <div class="Section">
         <h3>Signup</h3>
           <div class="inputBoxes">
@@ -94,6 +90,6 @@
       </div> -->
     </div>
 
-    <script src="./app.js"></script>
+    <script src="./examples/browser/app.js"></script>
   </body>
 </html>

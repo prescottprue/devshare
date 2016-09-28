@@ -1,8 +1,7 @@
-
 import file from './file'
 import entity from './entity'
 import folder from './folder'
-import { tessellateRoot, filesRoot, highlightColors } from '../../config'
+import { highlightColors, paths } from '../../config'
 import { randomIntBetween } from '../../utils'
 import { zipFileSystem } from '../../utils/zipper'
 import firebaser, {
@@ -11,9 +10,8 @@ import firebaser, {
   } from '../../utils/firebaser'
 
 export default (owner, projectname) => {
-  const relativePath = [filesRoot, owner, projectname]
-  const projectUrl = `${tessellateRoot}/projects/${owner}/${projectname}`
-
+  const relativePath = [paths.files, owner, projectname]
+  // const projectUrl = `${paths.files}/projects/${owner}/${projectname}`
   const methods = {
     firebaseUrl: () =>
       createFirebaseUrl(relativePath)(),
@@ -30,13 +28,13 @@ export default (owner, projectname) => {
     clone: (newOwner, newName) =>
       get(relativePath)()
         .then((files) =>
-          set([filesRoot, newOwner, newName || projectname])(files)
+          set([paths.files, newOwner, newName || projectname])(files)
             .then(() => files)
         ),
 
-    zip: () => zipFileSystem(projectUrl, relativePath),
+    zip: () => zipFileSystem({owner, name: projectname}, relativePath),
 
-    download: () => zipFileSystem(projectUrl, relativePath),
+    download: () => zipFileSystem({owner, name: projectname}, relativePath),
 
     // TODO: Check other existing colors before returning
     getUserColor: () =>

@@ -2,7 +2,7 @@
 /* global devshare */
 let devshare = window.Devshare.default
 console.log('Devshare', devshare)
-
+devshare.init()
 setStatus()
 
 function login () {
@@ -21,14 +21,14 @@ function signup () {
   var password = document.getElementById('signup-password').value
   var name = document.getElementById('signup-name').value
   var email = document.getElementById('signup-email').value
-  return devshare.signup(
-    {
-      username: username,
-      email: email,
-      password: password,
-      name: name
-    }
-  )
+  var signupObj = {
+    username: username,
+    email: email,
+    password: password,
+    name: name
+  }
+  console.log('calling signup:', signupObj)
+  return devshare.signup(signupObj)
   .then(res => setStatus())
 }
 
@@ -51,12 +51,19 @@ function getProject () {
   devshare.project('scott', 'angularExample')
     .get()
     .then(res => console.log('project:', res))
+    .catch(error => console.error('Error getting project:', error))
 }
 
 function addProject () {
   devshare.project('scott', 'angularExample')
     .add()
     .then(res => console.log('project:', res))
+}
+
+function downloadZip () {
+  devshare.project('prescottprue', 'diuy')
+    .download()
+    .then(res => console.log('zip path:', res))
 }
 
 function cloneProject () {
@@ -69,7 +76,7 @@ function setStatus () {
   var statusEl = document.getElementById('status')
   var logoutButton = document.getElementById('logout-btn')
 
-  if (devshare.getCurrentUser()) {
+  if (devshare.getCurrentUser() !== null) {
     statusEl.innerHTML = 'True'
     statusEl.style.color = 'green'
     // statusEl.className = statusEl.className ? ' status-loggedIn' : 'status-loggedIn'

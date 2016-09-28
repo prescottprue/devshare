@@ -1,18 +1,16 @@
-import config from '../config'
-import cruder, { search } from '../utils/cruder'
+import { paths } from '../config'
+import firebaser, { search } from '../utils/firebaser'
 
 export default () => {
-  const url = `${config.tessellateRoot}/users`
-
   const methods = {
     search: (query) => query.indexOf('@') === -1
-      ? search(url)('username', query)
-      : search(url)('email', query)
+      ? search(paths.users)('username', query)
+      : search(paths.users)('email', query)
   }
 
   return Object.assign(
     {},
     methods,
-    cruder(url, ['add'])
+    firebaser(paths.users, ['get', 'add'])
   )
 }

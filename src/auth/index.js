@@ -1,174 +1,208 @@
-import { isObject, isArray } from 'lodash'
-import cookie from 'cookie'
-import config from '../config'
-import {
-  auth as authWithFirebase,
-  unauth as unauthFromFirebase
-} from '../utils/firebaser'
-import { get, put, post } from '../utils/cruder'
-import { isBrowser } from '../utils'
+import { capitalize } from 'lodash'
+import firebase from 'firebase'
 import project from '../project'
+import { set, get, update } from '../utils/firebaser'
+import { paths } from '../config'
 
-const OAuth = isBrowser() ? require('oauthio-web').OAuth : {} // window/document undefined error
-
-let token
-let currentUser
-
-export const createHeaders = () => {
-  let header = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
+/**
+ * @description Get correct login method and params order based on provided credentials
+ * @param {Object} credentials - Login credentials
+ * @param {String} credentials.email - Email to login with (only needed for email login)
+ * @param {String} credentials.password - Password to login with (only needed for email login)
+ * @param {String} credentials.provider - Provider name such as google, twitter
+ * @param {String} credentials.type - Popup or redirect (only needed for 3rd party provider login)
+ * @param {String} credentials.token - Custom or provider token
+ */
+const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
+  if (provider) {
+    if (token) {
+      return {
+        method: 'signInWithCredential',
+        params: [ provider, token ]
+      }
+    }
+    const authProvider = new firebase.auth[`${capitalize(provider)}AuthProvider`]()
+    authProvider.addScope('email')
+    if (type === 'popup') {
+      return {
+        method: 'signInWithPopup',
+        params: [ authProvider ]
+      }
+    }
+    return {
+      method: 'signInWithRedirect',
+      params: [ authProvider ]
+    }
   }
-  if (isBrowser()) return header /* istanbul ignore next  */
-  header.Authorization = `Bearer ${token}` /* istanbul ignore next */
-  return header
+  if (token) {
+    return {
+      method: 'signInWithCustomToken',
+      params: [ token ]
+    }
+  }
+  return {
+    method: 'signInWithEmailAndPassword',
+    params: [ email, password ]
+  }
 }
 
-const setToken = (nextToken) => {
-  if (isBrowser()) document.cookie = cookie.serialize('token', nextToken)
-  token = nextToken
+/**
+ * @description Create new user account
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.email - Email of new user
+ * @param {String} userInfo.avatarUrl - Url of avatar image
+ * @param {String} userInfo.uid - User's uid
+ * @param {Array} userInfo.providerData - Data from external provider accounts
+ */
+const profileFromUserData = ({ email, username, avatarUrl, providerData, uid }) => {
+  const data = providerData && providerData[0]
+  if (!username) username = data.email.split('@')[0]
+  if (data.photoURL) {
+    avatarUrl = data.photoURL
+  }
+  const profile = { email, username }
+  if (providerData) profile.providerData = providerData
+  if (avatarUrl) profile.avatarUrl = avatarUrl
+  profile.uid = uid
+  return profile
 }
 
-const removeToken = () => {
-  /* istanbul ignore else  */
-  if (isBrowser()) document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-  token = null
-}
-
-export const getCurrentUser = () => {
-  if (isBrowser()) currentUser = window.sessionStorage.getItem('currentUser')
-  /* istanbul ignore next  */
-  return JSON.parse(currentUser)
-}
-
-const setCurrentUser = (nextCurrentUser) => {
-  if (isBrowser()) window.sessionStorage.setItem('currentUser', JSON.stringify(nextCurrentUser))
-  currentUser = nextCurrentUser
-}
-
-const removeCurrentUser = () => {
-  if (isBrowser()) window.sessionStorage.removeItem('currentUser')
-  currentUser = null
+/**
+ * @description Create new user account
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.email - Email of new user
+ */
+export const createUserProfile = (newUser) => {
+  // TODO: Verify that username does not already exist
+  const profile = profileFromUserData(newUser)
+  return get([paths.users, newUser.uid])()
+    .then((loadedProfile) =>
+      // Only write profile if it does not already exist
+      loadedProfile || Promise.all([
+        set([paths.users, newUser.uid])(profile),
+        set([paths.usernames, newUser.uid])(profile.username),
+        set([paths.uids, profile.username])(newUser.uid)
+      ])
+      .then(() => profile)
+    )
 }
 
 /**
 * @description Login/Authenticate as a user
-* @param {String|Object} username - Username or email of user to login as. Or object containing username, password, and project (optional)
+* @param {String|Object} username - Username or email of user to login as.
+* Or object containing username, password, and project (optional)
 * @param {String} password - Password of user to login as
 * @param {String} project - Name of project to clone to account after login (optional)
 */
-export const login = (username, password, projectName) => {
-  if (!username) return Promise.reject({ message: 'Username or Email is required to login ' })
-  if (isObject(username) && username.password) {
-    password = username.password
-    username = username.username
-    if (username.project) projectName = username.project
+export const login = (credentials, projectName) => {
+  if (!credentials.email && !credentials.username && !credentials.provider) {
+    return Promise.reject({ message: 'Username/Email or Provider is required to login ' })
   }
-  // Handle Array as first param
-  if (isArray(username)) {
-    if (username.length > 2) {
-      projectName = username[2]
-    }
-    password = username[1]
-    username = username[0]
-  }
-  if (isObject(username) && username.provider) return authWithProvider(username)
-  return put(`${config.tessellateRoot}/login`)({ username, password })
-    .then((response) => {
-      const { token, user, firebaseToken } = response
-      if (token) setToken(token)
-      if (user) setCurrentUser(user)
-      if (!firebaseToken) return response
-      return authWithFirebase(firebaseToken)
-        .then((firebaseData) => projectName
-          ? project('anon', projectName)
+
+  const { method, params } = getLoginMethodAndParams(credentials)
+  // TODO: Username login
+  // if (method === 'signInWithEmailAndPassword' && !credentials.email) {
+  //   devshare.firebase.database().ref().child(devshare._.config.usernames)
+  // }
+  return firebase.auth()[method](...params)
+    .then((userData) =>
+      // For email auth return uid (createUser is used for creating a profile)
+      userData.email
+        ? userData
+        : createUserProfile(userData.user)
+    )
+    .then(user =>
+      // If project name is included, clone project
+      !projectName
+        ? user
+        : project('anon', projectName)
             .clone(user.username, projectName)
-            .then((cloneRes) => response)
+            .then((cloneRes) => user)
             .catch((error) => Object.assign(user, { error }))
-          : response
-        )
-    })
+    )
 }
 
 /**
-* @description Logout of currently logged in user
-*/
-export const logout = () =>
-  put(`${config.tessellateRoot}/logout`)()
-    .then((response) => {
-      removeToken()
-      removeCurrentUser()
-      unauthFromFirebase()
-      return response
-    })
-
-/**
-* @description Signup and login as a new user
-* @param {Object} userInfo - Object containing signup data
-* @param {String} userInfo.username - Username of new user
-* @param {String} userInfo.email - Email of new user
-* @param {String} userInfo.password - Password of new user
-* @param {String} userInfo.project - Name of project to clone to account after signup (optional)
-*/
-export const signup = (userInfo) =>
-  post(`${config.tessellateRoot}/signup`)(userInfo)
-    .then((response) => {
-      const { token, user, firebaseToken } = response
-      if (token) setToken(token)
-      if (user) setCurrentUser(user)
-      if (!firebaseToken) return response
-      return authWithFirebase(firebaseToken)
-        .then((firebaseData) => userInfo.project
-          ? project('anon', userInfo.project)
-            .clone(user.username, userInfo.project)
-            .then((cloneRes) => response)
-            .catch((error) => Object.assign(user, { error }))
-          : response
-        )
-    })
-
-/**
-* @description Open oauth popup and handle result
-* @param {String} provider - Oauth Provider (google, github, facebook)
-* @param {String} token - Token from server
-*/
-const handleOAuthPopup = (provider, params) =>
-  OAuth
-    .popup(provider, { state: params.token })
-    .done((result) => Promise.resolve(result))
-    .fail((error) => Promise.reject(error))
-
-/**
- * @description Authenticate using a token generated from the server (so
- * server and client are both aware of auth state)
- * @param {String} provider - Oauth Provider (google, github, facebook)
+ * @description Logout of currently logged in user
  */
-export const authWithProvider = (provider) =>
-  get(`${config.tessellateRoot}/stateToken`)()
-    .then((params) => {
-      /* istanbul ignore if  */
-      if (!config.oauthioKey) return Promise.reject({ message: 'OAuthio key is required ' })
-      OAuth.initialize(config.oauthioKey)
-      /* istanbul ignore next */
-      return handleOAuthPopup(provider, params).then((result) =>
-        post(`${config.tessellateRoot}/auth`)({
-          provider,
-          code: result.code,
-          stateToken: params.token
-        }).then((response) => {
-          const { token, user, firebaseToken } = response
-          if (token) setToken(token)
-          if (user) setCurrentUser(user)
-          if (firebaseToken) authWithFirebase(firebaseToken)
-          return response
-        })
+export const logout = () =>
+  firebase.auth().signOut()
+
+/**
+ * @description Signup and login as a new user
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.email - Email of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ * @param {String} userInfo.password - Password of new user
+ * @param {String} userInfo.project - Name of project to clone to account after signup (optional)
+ */
+export const signup = ({ username, email, password, project, name }, projectName) => {
+  if (!email || !username || !password) {
+    return Promise.reject('Email and Password are required')
+  }
+  // Handle clone project name as part of first param
+  if (project) projectName = project
+
+  // Set name to username if not provided
+  if (!name) name = username
+
+  // TODO: Handle external provider signup (call login)
+  // TODO: Login before creating user profile
+  return firebase.auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then(({ providerData, uid }) =>
+      createUserProfile({ username, email, name, providerData, uid })
+        .then((newUser) => !projectName ? newUser
+          : project('anon', projectName)
+              .clone(username, projectName)
+              .then((cloneRes) => newUser)
+        )
+    )
+}
+
+export const getCurrentUser = () => firebase.auth().currentUser
+
+/**
+ * @description Update user profile in firebase auuth and users path
+ * @param {Object} userInfo - Object containing signup data
+ * @param {String} userInfo.username - Username of new user
+ * @param {String} userInfo.email - Email of new user
+ * @param {String} userInfo.displayName - Display name of new user
+ */
+export const updateUser = (newUserData) => {
+  const currentUser = getCurrentUser()
+  return currentUser.updateProfile(newUserData)
+    .then(() =>
+      update([paths.users, currentUser.uid])(newUserData)
+        .then(() => currentUser)
+    )
+    .catch(error => Promise.reject(error))
+}
+
+/**
+ * @description Update user email
+ * @param {String} email - New email for current user
+ */
+export const updateEmail = (newEmail) => {
+  const currentUser = getCurrentUser()
+  return currentUser
+    .updateEmail(newEmail)
+    .then(() =>
+      update([paths.users, currentUser.uid])({ email: newEmail })
+        .then(() => currentUser)
       )
-    })
-    .catch((error) => Promise.reject(error))
+    .catch(error => Promise.reject(error))
+}
 
 export default {
   getCurrentUser,
-  authWithProvider,
+  updateUser,
+  updateEmail,
   login,
   logout,
   signup

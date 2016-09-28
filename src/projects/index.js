@@ -1,30 +1,76 @@
-import config from '../config'
-import cruder, { search, add } from '../utils/cruder'
+import { paths } from '../config'
+import { getCurrentUser } from '../auth'
+import { search, get, set } from '../utils/firebaser'
 
 export default (username) => {
-  const url = username
-    ? `${config.tessellateRoot}/projects/${username}`
-    : `${config.tessellateRoot}/projects`
-
   const methods = {
     search: (query) =>
-      search(url)('name', query),
+      username
+      ? search([paths.projects, username])('name', query)
+      : search(paths.projects)('name', query),
+
+    get: () =>
+      get([paths.usernames, username])()
+        .then((uid) => get([paths.projects, uid])()),
 
     add: (project) => {
       if (!project.name) return Promise.reject({ message: 'name is required' })
+
       if (project.name.match(/[^A-Za-z0-9\-_!,() ]/)) {
         return Promise.reject({
           message: 'name may not contain symbols other than: _ ! , ( )'
         })
       }
-      return add(url)(project)
+
+      const currentUser = getCurrentUser()
+      if (!currentUser || !currentUser.uid) {
+        console.error('You must be logged in to create a project')
+        return Promise.reject({ message: 'You must be logged in to create a project' })
+      }
+      // TODO: Handle project owner being username or uid
+      // TODO: Handle project owner being object
+      // TODO: Handle project owner not being provided
+      // if (!project.owner) {
+      //   get([paths.projects, currentUser.uid, 'username'])().then(username => )
+      // }
+      // Check for existance of project name
+
+      return get([
+        paths.projects,
+        username || project.owner,
+        project.name
+      ])().then(loadedProject =>
+          // Push new project to projects list if it does not already exist
+          (loadedProject && loadedProject.name === project.name)
+            ? Promise.reject(`Error adding project: User already has a project named ${project.name}`)
+            : set([paths.projects, username || project.owner, project.name])(project).then((newProject) =>
+                // get list of projects within user
+                get([
+                  paths.users,
+                  currentUser.uid,
+                  paths.projects
+                ])().then((projectsList) =>
+                    projectsList === null
+                      ? set([
+                        paths.users,
+                        currentUser.uid,
+                        paths.projects
+                      ])([project.name]).then(() => project)
+                      : set([
+                        paths.users,
+                        currentUser.uid,
+                        paths.projects,
+                        projectsList.length
+                      ])(project.name).then(() => project)
+                  )
+              )
+          )
     }
 
   }
 
   return Object.assign(
     {},
-    cruder(url, ['get']),
     methods
   )
 }

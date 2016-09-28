@@ -19,13 +19,13 @@ describe('Users', () => {
         })
     })
 
-    it('searches by username', () =>
+    it.skip('searches by username', () =>
       users()
         .search(usernameQuery)
         .should.eventually.have.property('username', 'testuser')
     )
 
-    it('searches by email', () =>
+    it.skip('searches by email', () =>
       users()
         .search(emailQuery)
         .should.eventually.have.property('email', emailQuery)
