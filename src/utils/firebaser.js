@@ -16,6 +16,8 @@ export const init = (config) => {
   return firebase
 }
 
+export const storage = () => firebase.storage()
+
 /**
  * @description Handles abnormal characters within paths
  * @param {Array|String} relativePath - Releative path on firebase
@@ -109,9 +111,22 @@ export const remove = (relativePath) => () =>
  * @param {Array|String} relativePath - Path from Firebase root
  * @return {Promise}
  */
+ // TODO: Allow passing of type of sync like 'child_added'
 export const sync = (relativePath) => (callback) =>
   createFirebaseRef(relativePath)()
-    .on('value', (data) => callback(data.val()))
+    .on('value', (data) =>
+      callback(Object.assign(data.val(), { ref: data.ref }))
+    )
+
+/**
+ * @description Set data to a Firebase location based on array or string path
+ * @param {Array|String} relativePath - Path from Firebase root
+ * @return {Promise}
+ */
+export const unsync = (relativePath) => (callback) => {
+  createFirebaseRef(relativePath)()
+    .off('value', callback, callback)
+}
 
 /**
  * @description Search firebase router

@@ -15,7 +15,7 @@ describe('File', () => {
     )
   })
   describe('getContent()', () => {
-    it('reject for non existant file', () =>
+    it.skip('reject for non existant file', () =>
       file([testUser, testProject], 'index.js')
         .getContent().should.eventually.be.rejected
     )

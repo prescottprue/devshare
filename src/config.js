@@ -5,7 +5,8 @@ export default {
     uids: 'uids',
     projects: 'projects',
     projectNames: 'projectNames',
-    usernames: 'usernames'
+    usernames: 'usernames',
+    requests: 'requests'
   },
   firebase: {
     prod: {

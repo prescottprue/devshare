@@ -11,7 +11,7 @@ import firebaser, {
 
 export default (owner, projectname) => {
   const relativePath = [paths.files, owner, projectname]
-  const projectUrl = `${paths.files}/projects/${owner}/${projectname}`
+  // const projectUrl = `${paths.files}/projects/${owner}/${projectname}`
   const methods = {
     firebaseUrl: () =>
       createFirebaseUrl(relativePath)(),
@@ -32,9 +32,9 @@ export default (owner, projectname) => {
             .then(() => files)
         ),
 
-    zip: () => zipFileSystem(projectUrl, relativePath),
+    zip: () => zipFileSystem({owner, name: projectname}, relativePath),
 
-    download: () => zipFileSystem(projectUrl, relativePath),
+    download: () => zipFileSystem({owner, name: projectname}, relativePath),
 
     // TODO: Check other existing colors before returning
     getUserColor: () =>
