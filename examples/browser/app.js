@@ -33,7 +33,7 @@ function signup () {
 }
 
 function authWithProvider (provider) {
-  return devshare.authWithProvider({ provider: provider })
+  return devshare.login({ provider: provider })
     .then(res => setStatus())
 }
 
@@ -86,4 +86,13 @@ function setStatus () {
     statusEl.style.color = 'red'
     logoutButton.style.display = 'none'
   }
+}
+
+function getCurrentUser() {
+  return devshare.getCurrentUser()
+}
+function addCollaborator() {
+  return devshare.project('prescottprue', 'diuy')
+    .addCollaborator()
+    .then(res => console.log('project:', res))
 }

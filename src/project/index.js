@@ -1,10 +1,11 @@
-import { set, get, update } from '../utils/firebaser'
+import { set, get, update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
 import collaborators from './collaborators'
-import { isObject, remove } from 'lodash'
+import { isObject, remove as removeFromList } from 'lodash'
 import { paths } from '../config'
+import { getCurrentUser } from '../auth'
 
 export default (owner, projectname) => {
   // Handle object as first param
@@ -18,38 +19,57 @@ export default (owner, projectname) => {
   const name = `${paths.projects}/${owner}/${projectname}`
 
   const getProject = () =>
-    get([paths.usernames, owner])()
+    get([paths.uids, owner])()
      .then((uid) => !uid
-       ? Promise.reject(`User with username: ${owner} does not exist.`)
+       ? Promise.reject(`${owner} is not a user`)
        : get([paths.projects, owner, projectname])()
-         .then((project) => !project
-           ? Promise.reject(`Project with name: ${projectname} does not exist.`)
-           : project
+         .then((project) =>
+           project || Promise.reject(
+             `Project with name: ${projectname} does not exist.`
+           )
          )
        )
 
   const addCollaborator = (username) =>
-    get([paths.usernames, username])()
-      .then((uid) =>
-        getProject().then((project) =>
-          !project.collaborators
-            ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
-            : project.collaborators.indexOf(uid) !== -1
-              ? Promise.reject('User is already a collaborator')
-              : set([
-                paths.projects,
-                owner,
-                projectname,
-                'collaborators'
-              ])([
-                ...project.collaborators,
-                uid
-              ])
+    get([paths.uids, username])()
+        .then((uid) =>
+          !uid
+            ? Promise.reject(`${username} is not a user`)
+            : uid === getCurrentUser().uid
+              ? Promise.reject(`${username} is the owner`)
+              : getProject().then((project) =>
+                !project.collaborators
+                  ? set([
+                    paths.projects,
+                    owner,
+                    projectname,
+                    'collaborators'
+                  ])([ uid ])
+                  : project.collaborators.indexOf(uid) !== -1
+                    ? Promise.reject('User is already a collaborator')
+                    : set([
+                      paths.projects,
+                      owner,
+                      projectname,
+                      'collaborators'
+                    ])([
+                      ...project.collaborators,
+                      uid
+                    ])
+              )
         )
+
+  const removeProject = () =>
+    getProject()
+      .then(project =>
+        remove([ paths.projects, owner, projectname ])()
       )
 
   const methods = {
     get: getProject,
+    remove: removeProject,
+    delete: removeProject,
+
     addCollaborator,
 
     rename: (newProjectname) =>
@@ -58,19 +78,20 @@ export default (owner, projectname) => {
     addCollaborators: (collaborators) =>
       Promise.all(
         collaborators.map(collaborator =>
-          get([paths.usernames, collaborator])()
-            .then(uid => addCollaborator(uid))
+          addCollaborator(collaborator)
         )
       ),
 
     removeCollaborator: (username) =>
-      get([paths.usernames, username])()
+      get([paths.uids, username])()
         .then((uid) =>
           getProject()
             .then(({ collaborators }) =>
-              (!collaborators || collaborators.indexOf(uid) !== -1)
+              (!collaborators || collaborators.indexOf(uid) === -1)
                 ? Promise.reject('User is not a collaborator on project')
-                : set(`${name}/collaborators`)(remove(collaborators, uid))
+                : set(`${name}/collaborators`)(
+                    removeFromList(collaborators, uid)
+                  )
             )
       ),
 

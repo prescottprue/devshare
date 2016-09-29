@@ -14,18 +14,22 @@ export default (username) => {
         .then((uid) => get([paths.projects, uid])()),
 
     add: (project) => {
-      if (!project.name) return Promise.reject({ message: 'name is required' })
+      if (!project.name) return Promise.reject('Name is required.')
 
-      if (project.name.match(/[^A-Za-z0-9\-_!,() ]/)) {
-        return Promise.reject({
-          message: 'name may not contain symbols other than: _ ! , ( )'
-        })
+      if (project.name.match(/[/\s]/g)) {
+        return Promise.reject('Name may not contain spaces.')
+      }
+
+      if (project.name.match(/[.$#\[\]\/]/g)) {
+        return Promise.reject(
+          'Name may contain letters and symbols except for ., $, #, [, ], /.'
+        )
       }
 
       const currentUser = getCurrentUser()
       if (!currentUser || !currentUser.uid) {
         console.error('You must be logged in to create a project')
-        return Promise.reject({ message: 'You must be logged in to create a project' })
+        return Promise.reject('You must be logged in to create a project')
       }
       // TODO: Handle project owner being username or uid
       // TODO: Handle project owner being object
