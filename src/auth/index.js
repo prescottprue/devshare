@@ -143,8 +143,9 @@ export const logout = () =>
  */
 export const signup = ({ username, email, password, project, name }, projectName) => {
   if (!email || !username || !password) {
-    return Promise.reject('Email and Password are required')
+    return Promise.reject('email, username and password are required')
   }
+
   // Handle clone project name as part of first param
   if (project) projectName = project
 
@@ -157,11 +158,11 @@ export const signup = ({ username, email, password, project, name }, projectName
     .createUserWithEmailAndPassword(email, password)
     .then(({ providerData, uid }) =>
       createUserProfile({ username, email, name, providerData, uid })
-        .then((newUser) => !projectName ? newUser
-          : project('anon', projectName)
-              .clone(username, projectName)
-              .then((cloneRes) => newUser)
+        .then((newUser) => !projectName
+          ? newUser
+          : project('anon', projectName).clone(username, projectName)
         )
+        .then((cloneRes) => newUser)
     )
 }
 
@@ -179,9 +180,8 @@ export const updateUser = (newUserData) => {
   return currentUser.updateProfile(newUserData)
     .then(() =>
       update([paths.users, currentUser.uid])(newUserData)
-        .then(() => currentUser)
     )
-    .catch(error => Promise.reject(error))
+    .then(() => currentUser)
 }
 
 /**
@@ -194,9 +194,8 @@ export const updateEmail = (newEmail) => {
     .updateEmail(newEmail)
     .then(() =>
       update([paths.users, currentUser.uid])({ email: newEmail })
-        .then(() => currentUser)
-      )
-    .catch(error => Promise.reject(error))
+    )
+    .then(() => currentUser)
 }
 
 export default {

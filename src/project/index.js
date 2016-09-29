@@ -19,35 +19,38 @@ export default (owner, projectname) => {
   const name = `${paths.projects}/${owner}/${projectname}`
 
   const getProject = () =>
-    get([paths.usernames, owner])()
+    get([paths.uids, owner])()
      .then((uid) => !uid
-       ? Promise.reject(`User with username: ${owner} does not exist.`)
+       ? Promise.reject(`${owner} is not a user`)
        : get([paths.projects, owner, projectname])()
-         .then((project) =>
-            project || Promise.reject(`Project with name: ${paths.projects} ${owner} ${projectname} does not exist.`)
-         )
+         .then((project) => {
+           console.log('project:', project)
+           return project || Promise.reject(`Project with name: ${paths.projects} ${owner} ${projectname} does not exist.`)
+         })
        )
 
   const addCollaborator = (username) =>
-    get([paths.usernames, username])()
+    get([paths.uids, username])()
         .then((uid) =>
-          uid === getCurrentUser().uid
-          ? Promise.reject(`${username} is the owner`)
-          : getProject().then((project) =>
-            !project.collaborators
-              ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
-              : project.collaborators.indexOf(uid) !== -1
-                ? Promise.reject('User is already a collaborator')
-                : set([
-                  paths.projects,
-                  owner,
-                  projectname,
-                  'collaborators'
-                ])([
-                  ...project.collaborators,
-                  uid
-                ])
-          )
+          !uid
+            ? Promise.reject(`${username} is not a user`)
+            : uid === getCurrentUser().uid
+              ? Promise.reject(`${username} is the owner`)
+              : getProject().then((project) =>
+                !project.collaborators
+                  ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
+                  : project.collaborators.indexOf(uid) !== -1
+                    ? Promise.reject('User is already a collaborator')
+                    : set([
+                      paths.projects,
+                      owner,
+                      projectname,
+                      'collaborators'
+                    ])([
+                      ...project.collaborators,
+                      uid
+                    ])
+              )
         )
 
   const methods = {
@@ -60,13 +63,12 @@ export default (owner, projectname) => {
     addCollaborators: (collaborators) =>
       Promise.all(
         collaborators.map(collaborator =>
-          get([paths.usernames, collaborator])()
-            .then(uid => addCollaborator(uid))
+          addCollaborator(collaborator)
         )
       ),
 
     removeCollaborator: (username) =>
-      get([paths.usernames, username])()
+      get([paths.uids, username])()
         .then((uid) =>
           getProject()
             .then(({ collaborators }) =>
