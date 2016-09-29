@@ -1,9 +1,9 @@
-import { set, get, update } from '../utils/firebaser'
+import { set, get, update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
 import collaborators from './collaborators'
-import { isObject, remove } from 'lodash'
+import { isObject, remove as removeFromList } from 'lodash'
 import { paths } from '../config'
 import { getCurrentUser } from '../auth'
 
@@ -23,10 +23,11 @@ export default (owner, projectname) => {
      .then((uid) => !uid
        ? Promise.reject(`${owner} is not a user`)
        : get([paths.projects, owner, projectname])()
-         .then((project) => {
-           console.log('project:', project)
-           return project || Promise.reject(`Project with name: ${paths.projects} ${owner} ${projectname} does not exist.`)
-         })
+         .then((project) =>
+           project || Promise.reject(
+             `Project with name: ${projectname} does not exist.`
+           )
+         )
        )
 
   const addCollaborator = (username) =>
@@ -38,7 +39,12 @@ export default (owner, projectname) => {
               ? Promise.reject(`${username} is the owner`)
               : getProject().then((project) =>
                 !project.collaborators
-                  ? set([ paths.projects, owner, projectname, 'collaborators' ])([ uid ])
+                  ? set([
+                    paths.projects,
+                    owner,
+                    projectname,
+                    'collaborators'
+                  ])([ uid ])
                   : project.collaborators.indexOf(uid) !== -1
                     ? Promise.reject('User is already a collaborator')
                     : set([
@@ -53,8 +59,17 @@ export default (owner, projectname) => {
               )
         )
 
+  const removeProject = () =>
+    getProject()
+      .then(project =>
+        remove([ paths.projects, owner, projectname ])()
+      )
+
   const methods = {
     get: getProject,
+    remove: removeProject,
+    delete: removeProject,
+
     addCollaborator,
 
     rename: (newProjectname) =>
@@ -72,9 +87,11 @@ export default (owner, projectname) => {
         .then((uid) =>
           getProject()
             .then(({ collaborators }) =>
-              (!collaborators || collaborators.indexOf(uid) !== -1)
+              (!collaborators || collaborators.indexOf(uid) === -1)
                 ? Promise.reject('User is not a collaborator on project')
-                : set(`${name}/collaborators`)(remove(collaborators, uid))
+                : set(`${name}/collaborators`)(
+                    removeFromList(collaborators, uid)
+                  )
             )
       ),
 

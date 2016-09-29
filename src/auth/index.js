@@ -160,9 +160,11 @@ export const signup = ({ username, email, password, project, name }, projectName
       createUserProfile({ username, email, name, providerData, uid })
         .then((newUser) => !projectName
           ? newUser
-          : project('anon', projectName).clone(username, projectName)
+          : project('anon', projectName)
+              .clone(username, projectName)
+              .then((cloneRes) => newUser)
         )
-        .then((cloneRes) => newUser)
+
     )
 }
 
