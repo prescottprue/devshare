@@ -58,7 +58,7 @@ const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
  */
 const profileFromUserData = ({ email, username, avatarUrl, providerData, uid }) => {
   const data = providerData && providerData[0]
-  if (!username) username = data.email.split('@')[0]
+  if (!username) username = data.email.split('@')[0].replace(/[^\w\s]/gi, '')
   if (data.photoURL) {
     avatarUrl = data.photoURL
   }
@@ -141,9 +141,19 @@ export const logout = () =>
  * @param {String} userInfo.password - Password of new user
  * @param {String} userInfo.project - Name of project to clone to account after signup (optional)
  */
-export const signup = ({ username, email, password, project, name }, projectName) => {
+export const signup = ({ username, email, password, project, name, provider }, projectName) => {
   if (!email || !username || !password) {
     return Promise.reject('email, username and password are required')
+  }
+
+  // Handle spaces in username
+  if (username.match(/[/\s]/g)) {
+    return Promise.reject('Username may contain spaces')
+  }
+
+  // Handle symbols in username
+  if (username.match(/[.$#\[\]\/]/g)) {
+    return Promise.reject('Username may contain symbols except for ., $, #, [, ], /')
   }
 
   // Handle clone project name as part of first param
@@ -152,8 +162,11 @@ export const signup = ({ username, email, password, project, name }, projectName
   // Set name to username if not provided
   if (!name) name = username
 
-  // TODO: Handle external provider signup (call login)
-  // TODO: Login before creating user profile
+  // Handle external provider signup
+  if (provider) {
+    return login({ provider }, projectName)
+  }
+
   return firebase.auth()
     .createUserWithEmailAndPassword(email, password)
     .then(({ providerData, uid }) =>
