@@ -8,6 +8,9 @@ export default {
     usernames: 'usernames',
     requests: 'requests'
   },
+  github: {
+    apiUrl: 'https://api.github.com'
+  },
   firebase: {
     production: {
       apiKey: 'AIzaSyBQw-StxUsUhoQwZqaawegUFO7YOyG_HDA',

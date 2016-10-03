@@ -55,6 +55,11 @@ export const search = (url) => (key, query) =>
     .then((body) => handleResponse(body))
   : Promise.reject({ message: 'query is required to search' })
 
+export const getWithHeaders = (url) => (headers) =>
+  fetch(url, { headers })
+    .then((response) => response.json())
+    .then((body) => handleResponse(body))
+
 export const add = post
 export const create = post
 export const update = put

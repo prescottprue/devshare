@@ -2,7 +2,8 @@ import { capitalize } from 'lodash'
 import firebase from 'firebase'
 import project from '../project'
 import { set, get, update } from '../utils/firebaser'
-import { paths } from '../config'
+import { getWithHeaders } from '../utils/cruder'
+import { paths, github as githubConfig } from '../config'
 
 /**
  * @description Get correct login method and params order based on provided credentials
@@ -23,6 +24,10 @@ const getLoginMethodAndParams = ({email, password, provider, type, token}) => {
     }
     const authProvider = new firebase.auth[`${capitalize(provider)}AuthProvider`]()
     authProvider.addScope('email')
+    if (provider.toLowerCase() === 'github') {
+      authProvider.addScope('user')
+      authProvider.addScope('repo')
+    }
     if (type === 'popup') {
       return {
         method: 'signInWithPopup',
@@ -63,7 +68,11 @@ const profileFromUserData = ({ email, username, avatarUrl, providerData, uid }) 
     avatarUrl = data.photoURL
   }
   const profile = { email, username }
-  if (providerData) profile.providerData = providerData
+  if (providerData) {
+    profile.providerData = {}
+    const data = providerData[0]
+    profile.providerData[data.providerId.split('.')[0]] = data
+  }
   if (avatarUrl) profile.avatarUrl = avatarUrl
   profile.uid = uid
   return profile
@@ -109,7 +118,20 @@ export const login = (credentials, projectName) => {
   //   devshare.firebase.database().ref().child(devshare._.config.usernames)
   // }
   return firebase.auth()[method](...params)
-    .then((userData) =>
+    .then((userData) => {
+      // Get username from Github API if provider is github
+      if (userData.credential && userData.credential.provider === 'github.com') {
+        return getWithHeaders(
+          `${githubConfig.apiUrl}/user`
+        )({ Authorization: `token ${userData.credential.accessToken}` })
+          .then(({ login }) => {
+            userData.user.username = login
+            return userData
+          })
+      }
+      return userData
+    })
+    .then(userData =>
       // For email auth return uid (createUser is used for creating a profile)
       userData.email
         ? userData
