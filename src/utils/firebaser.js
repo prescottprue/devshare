@@ -7,12 +7,20 @@ import { firebase as firebaseConfig } from '../config'
  * @description Initialize firebase application
  */
 export const init = (config) => {
-  const env = config ? firebaseConfig[config.env] : firebaseConfig.prod
+  // Handle shortened forms of environment names
+  if (config && config.env) {
+    if (config.env === 'dev') config.env = 'development'
+    if (config.env === 'prod') config.env = 'production'
+  }
+
+  const fbConfig = config ? firebaseConfig[config.env] : firebaseConfig.production
+
   try {
-    firebase.initializeApp(env)
+    firebase.initializeApp(fbConfig)
   } catch (err) {
     console.warn('You only need to initialize Firebase once', JSON.stringify(err))
   }
+
   return firebase
 }
 

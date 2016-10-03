@@ -51,3 +51,4 @@ addons:
 after_success:
   - npm install -g codeclimate-test-reporter
   - codeclimate-test-reporter < coverage/lcov.info
+  - npm run codecov
