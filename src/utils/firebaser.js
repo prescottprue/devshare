@@ -30,7 +30,7 @@ export const createFirebaseUrl = (relativePath) => () => {
   // TODO: Check for path not being string
   return relativePath.map((loc) => (loc && isString(loc))
         ? loc.replace(/[.]/g, ':')
-          .replace(/[#$\[\]]/g, '_-_')
+          .replace(/[#$[\]]/g, '_-_')
         : loc
     ).join('/')
 }
