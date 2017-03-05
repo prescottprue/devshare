@@ -1,7 +1,6 @@
 language: node_js
 
 node_js:
-  - "5"
   - "6"
 
 branches:
@@ -13,36 +12,6 @@ sudo: false
 script:
   - npm run lint:fix
   - npm run test:cov
-
-deploy:
-  - provider: s3
-    skip_cleanup: true
-    access_key_id: $AWS_KEY
-    secret_access_key: $AWS_SECRET
-    bucket: $AWS_BUCKET
-    acl: public_read
-    local_dir: dist
-    upload-dir: devshare/latest
-    on:
-      branch: master
-      condition: $AWS_KEY
-  - provider: s3
-    skip_cleanup: true
-    access_key_id: $AWS_KEY
-    secret_access_key: $AWS_SECRET
-    bucket: $AWS_BUCKET
-    acl: public_read
-    local_dir: dist
-    upload-dir: devshare/$npm_package_version
-    on:
-      branch: master
-      condition: $AWS_KEY
-  - provider: npm
-    api_key: $NPM_TOKEN
-    on:
-      branch: master
-      tags: true
-      condition: $TRAVIS_PULL_REQUEST = false
 
 addons:
   code_climate:

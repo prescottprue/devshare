@@ -7,13 +7,7 @@ import { firebase as firebaseConfig } from '../config'
  * @description Initialize firebase application
  */
 export const init = (config) => {
-  // Handle shortened forms of environment names
-  if (config && config.env) {
-    if (config.env === 'dev') config.env = 'development'
-    if (config.env === 'prod') config.env = 'production'
-  }
-
-  const fbConfig = config ? firebaseConfig[config.env] : firebaseConfig.production
+  const fbConfig = config ? firebaseConfig[config.env] : firebaseConfig.prod
 
   try {
     firebase.initializeApp(fbConfig)
