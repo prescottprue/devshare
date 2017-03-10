@@ -170,11 +170,11 @@ export const signup = ({ username, email, password, project, name, provider }, p
 
   // Handle spaces in username
   if (username.match(/[/\s]/g)) {
-    return Promise.reject('Username may contain spaces')
+    return Promise.reject('Username may not contain spaces')
   }
 
   // Handle symbols in username
-  if (username.match(/[.$#\[\]\/]/g)) {
+  if (username.match(/[.$#[\]/]/g)) {
     return Promise.reject('Username may contain symbols except for ., $, #, [, ], /')
   }
 

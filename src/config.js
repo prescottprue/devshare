@@ -12,17 +12,29 @@ export default {
     apiUrl: 'https://api.github.com'
   },
   firebase: {
-    production: {
+    prod: {
       apiKey: 'AIzaSyBQw-StxUsUhoQwZqaawegUFO7YOyG_HDA',
       authDomain: 'devshare-1.firebaseapp.com',
       databaseURL: 'https://devshare-1.firebaseio.com',
       storageBucket: 'devshare-1.appspot.com'
     },
-    development: {
+    stg: {
       apiKey: 'AIzaSyBuwR21cO0lMzMr_T-Dl_jG1dsORXZ1fwY',
       authDomain: 'devshare-stg.firebaseapp.com',
       databaseURL: 'https://devshare-stg.firebaseio.com',
       storageBucket: 'devshare-stg.appspot.com'
+    },
+    int: {
+      apiKey: 'AIzaSyDiVbMbj7nPXTBXxZlr_HiZ2AOY7yXWkYY',
+      authDomain: 'devshare-int.firebaseapp.com',
+      databaseURL: 'https://devshare-int.firebaseio.com',
+      storageBucket: 'devshare-int.appspot.com'
+    },
+    dev: {
+      apiKey: 'AIzaSyDiVbMbj7nPXTBXxZlr_HiZ2AOY7yXWkYY',
+      authDomain: 'devshare-int.firebaseapp.com',
+      databaseURL: 'https://devshare-int.firebaseio.com',
+      storageBucket: 'devshare-int.appspot.com'
     }
   },
   highlightColors: [

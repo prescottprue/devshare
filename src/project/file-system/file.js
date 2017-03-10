@@ -49,7 +49,7 @@ export default (projectPath, filePath) => {
             this.content = snap.child('original').val() /* istanbul ignore next */
             return this.content
           }
-          return getTextFromRef(snap.ref())
+          return getTextFromRef(snap.ref)
         })
   }
 

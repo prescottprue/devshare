@@ -23,11 +23,11 @@ export const getFirepad = () => {
  /* istanbul ignore next */
 export const getTextFromRef = (ref) => {
   // TODO: Load content from getContent endpoint
-  if (!firepadExists()) {
-    console.error('Loading content is not yet supported without Firepad') // eslint-ignore-line no-console
-    return Promise.reject({ message: 'Loading content is not yet supported without Firepad' })
-  }
-  const Firepad = getFirepad()
+  // if (!firepadExists()) {
+  //   console.error('Loading content is not yet supported without Firepad') // eslint-ignore-line no-console
+  //   return Promise.reject({ message: 'Loading content is not yet supported without Firepad' })
+  // }
+  const Firepad = require('firepad')
   return new Promise((resolve) =>
     Firepad
       .Headless(ref)

@@ -20,7 +20,7 @@ export default (username) => {
         return Promise.reject('Name may not contain spaces.')
       }
 
-      if (project.name.match(/[.$#\[\]\/]/g)) {
+      if (project.name.match(/[.$#[\]/]/g)) {
         return Promise.reject(
           'Name may contain letters and symbols except for ., $, #, [, ], /.'
         )
