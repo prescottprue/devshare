@@ -6,7 +6,9 @@ export default {
     projects: 'projects',
     projectNames: 'projectNames',
     usernames: 'usernames',
-    requests: 'requests'
+    requests: 'requests',
+    templateFiles: 'templateFiles',
+    templates: 'templates'
   },
   github: {
     apiUrl: 'https://api.github.com'

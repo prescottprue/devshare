@@ -1,6 +1,6 @@
 {
   "name": "devshare",
-  "version": "0.3.0",
+  "version": "0.4.0-alpha",
   "description": "Library to communicate with devshare development sharing platform.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -71,6 +71,7 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-lodash": "^3.2.9",
     "babel-plugin-transform-object-assign": "^6.8.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.16.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",

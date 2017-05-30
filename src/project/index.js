@@ -2,6 +2,7 @@ import { set, get, update, remove } from '../utils/firebaser'
 import fileSystem from './file-system'
 import cloud from './cloud'
 import projects from '../projects'
+import template from '../template'
 import collaborators from './collaborators'
 import { isObject, remove as removeFromList } from 'lodash'
 import { paths } from '../config'
@@ -102,6 +103,11 @@ export default (owner, projectname) => {
           fileSystem(owner, projectname)
             .clone(newOwner, newName)
         ),
+
+    copyToTemplate: (name) => {
+      console.log('copy from project;', { owner, projectname })
+      return template(name).copyFromProject(owner, projectname)
+    },
 
     download: () =>
       fileSystem(owner, projectname).download()

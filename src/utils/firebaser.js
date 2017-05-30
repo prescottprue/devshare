@@ -2,6 +2,7 @@ import firebase from 'firebase'
 import { typeReducer } from './index'
 import { isArray, isString } from 'lodash'
 import { firebase as firebaseConfig } from '../config'
+import { getCurrentUser } from '../auth'
 
 /**
  * @description Initialize firebase application
@@ -60,6 +61,24 @@ export const get = (relativePath) => () =>
  */
 export const set = (relativePath) => (object, priority) => {
   return createFirebaseRef(relativePath)()[priority ? 'setWithPriority' : 'set'](object)
+    .then((data) => data ? data.val() : object)
+}
+
+/**
+ * @description Set data to a Firebase location based on array or string path
+ * @param {Array|String} relativePath - Releative
+ * @return {Promise}
+ */
+export const setWithMeta = (relativePath) => (object, priority) => {
+  const setData = {
+    ...object,
+    createdAt: firebase.database.ServerValue.TIMESTAMP
+  }
+  if (getCurrentUser()) {
+    setData.createdBy = getCurrentUser().uid
+  }
+  return createFirebaseRef(relativePath)()
+    .set(setData)
     .then((data) => data ? data.val() : object)
 }
 
@@ -158,6 +177,7 @@ export default (url, types) => {
     get,
     getChild,
     set,
+    setWithMeta,
     add,
     sync,
     update,
